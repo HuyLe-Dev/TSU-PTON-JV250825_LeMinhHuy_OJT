@@ -1,6 +1,9 @@
 package com.example.smart_cinema_booking_system.entity;
 
-import com.example.smart_cinema_booking_system.enums.Role;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.management.relation.Role;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -46,4 +49,9 @@ public class User extends BaseEntity {
 
     @Column(name = "disable_reason")
     private String disableReason;
+
+    // Quan hệ 1-N: Một User có nhiều Booking (phục vụ tra cứu lịch sử đặt vé -
+    // CORE-07)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Booking> bookings = new ArrayList<>();
 }

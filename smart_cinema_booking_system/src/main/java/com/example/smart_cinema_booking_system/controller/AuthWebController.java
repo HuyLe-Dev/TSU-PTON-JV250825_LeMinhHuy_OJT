@@ -1,9 +1,5 @@
 package com.example.smart_cinema_booking_system.controller;
 
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,7 +7,13 @@ import org.springframework.web.bind.annotation.*;
 
 import com.example.smart_cinema_booking_system.dto.request.LoginRequestDTO;
 import com.example.smart_cinema_booking_system.dto.request.RegisterRequestDTO;
+import com.example.smart_cinema_booking_system.exception.BusinessException;
 import com.example.smart_cinema_booking_system.service.AuthService;
+
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @Controller
 @RequestMapping("/auth")
@@ -28,15 +30,15 @@ public class AuthWebController {
 
     @PostMapping("/register")
     public String processRegister(@Valid @ModelAttribute("registerDTO") RegisterRequestDTO request,
-            BindingResult result, Model model) {
+            BindingResult result, Model model, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "auth/register";
         }
         try {
             authService.register(request);
-            model.addAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập.");
+            redirectAttributes.addFlashAttribute("successMessage", "Đăng ký thành công! Vui lòng đăng nhập.");
             return "redirect:/auth/login";
-        } catch (IllegalArgumentException e) {
+        } catch (BusinessException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "auth/register";
         }
@@ -65,7 +67,7 @@ public class AuthWebController {
             response.addCookie(jwtCookie);
 
             return "redirect:/"; // Chuyển về trang chủ sau khi login thành công
-        } catch (IllegalArgumentException e) {
+        } catch (BusinessException e) {
             model.addAttribute("errorMessage", e.getMessage());
             return "auth/login";
         }

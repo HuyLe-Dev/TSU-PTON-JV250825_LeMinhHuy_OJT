@@ -73,13 +73,22 @@
                                     th:errors="*{email}"></div>
                             </div>
 
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <label class="form-label fw-semibold">Mật khẩu</label>
                                 <input type="password" th:field="*{password}"
                                     th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
                                     class="form-control" placeholder="Tối thiểu 6 ký tự...">
                                 <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}"
                                     th:errors="*{password}"></div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">Xác nhận mật khẩu</label>
+                                <input type="password" th:field="*{confirmPassword}"
+                                    th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+                                    class="form-control" placeholder="Nhập lại mật khẩu...">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}"
+                                    th:errors="*{confirmPassword}"></div>
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">TẠO TÀI
