@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhân viên - Smart Cinema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/staff/dashboard}">SMART CINEMA - NHÂN VIÊN</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/staff/bookings}">Tra cứu đơn hàng</a>
+                <a class="nav-link text-warning" th:href="@{/auth/logout}">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Khu vực Nhân viên</h2>
+        <p class="text-muted">Tra cứu mã đơn hàng, xác nhận thanh toán, in vé tại quầy.</p>
+
+        <div class="row mt-4">
+            <div class="col-md-6 mb-3">
+                <div class="card bg-secondary text-white shadow">
+                    <div class="card-body">
+                        <h5 class="card-title">Tra cứu Đơn hàng</h5>
+                        <p class="card-text">Tìm kiếm đơn hàng theo mã booking để xác nhận thanh toán hoặc in vé.</p>
+                        <a th:href="@{/staff/bookings}" class="btn btn-light btn-sm">Truy cập</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
