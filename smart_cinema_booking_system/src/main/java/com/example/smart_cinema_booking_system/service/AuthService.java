@@ -1,7 +1,5 @@
 package com.example.smart_cinema_booking_system.service;
 
-import javax.management.relation.Role;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.smart_cinema_booking_system.dto.request.LoginRequestDTO;
 import com.example.smart_cinema_booking_system.dto.request.RegisterRequestDTO;
 import com.example.smart_cinema_booking_system.entity.User;
+import com.example.smart_cinema_booking_system.enums.Role;
 import com.example.smart_cinema_booking_system.exception.BusinessException;
 import com.example.smart_cinema_booking_system.repository.UserRepository;
 import com.example.smart_cinema_booking_system.security.JwtTokenProvider;

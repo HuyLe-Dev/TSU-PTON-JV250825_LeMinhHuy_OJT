@@ -3,7 +3,7 @@ package com.example.smart_cinema_booking_system.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.relation.Role;
+import com.example.smart_cinema_booking_system.enums.Role;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
