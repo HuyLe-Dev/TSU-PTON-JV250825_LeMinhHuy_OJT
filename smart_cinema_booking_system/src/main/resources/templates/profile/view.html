@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ sơ cá nhân - Smart Cinema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/}">SMART CINEMA</a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" th:href="@{/}">Trang chủ</a>
+                <a class="nav-link active" th:href="@{/profile}">Hồ sơ</a>
+                <a class="nav-link text-warning" th:href="@{/auth/logout}">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+
+                <!-- Thông báo thành công -->
+                <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span th:text="${successMessage}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">Hồ sơ cá nhân</h4>
+                        <span class="badge bg-info" th:text="${profile.role}">ROLE</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Avatar -->
+                            <div class="col-md-4 text-center mb-3">
+                                <img th:src="${profile.avatarUrl != null && !profile.avatarUrl.isEmpty()} ? ${profile.avatarUrl} : 'https://via.placeholder.com/150'"
+                                     class="rounded-circle img-fluid border" style="width: 150px; height: 150px; object-fit: cover;"
+                                     alt="Avatar">
+                                <h5 class="mt-2" th:text="${profile.fullName ?: profile.username}">Tên người dùng</h5>
+                                <small class="text-muted" th:text="'@' + ${profile.username}">@username</small>
+                            </div>
+
+                            <!-- Thông tin chi tiết -->
+                            <div class="col-md-8">
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <th class="text-muted" style="width: 40%;">Email:</th>
+                                        <td th:text="${profile.email ?: 'Chưa cập nhật'}">email@example.com</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Số điện thoại:</th>
+                                        <td th:text="${profile.phone ?: 'Chưa cập nhật'}">0123456789</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Giới tính:</th>
+                                        <td>
+                                            <span th:if="${profile.gender != null}" th:switch="${profile.gender.name()}">
+                                                <span th:case="'MALE'">Nam</span>
+                                                <span th:case="'FEMALE'">Nữ</span>
+                                                <span th:case="'OTHER'">Khác</span>
+                                            </span>
+                                            <span th:if="${profile.gender == null}" class="text-muted">Chưa cập nhật</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Ngày sinh:</th>
+                                        <td th:text="${profile.dateOfBirth != null} ? ${#temporals.format(profile.dateOfBirth, 'dd/MM/yyyy')} : 'Chưa cập nhật'">01/01/2000</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Địa chỉ:</th>
+                                        <td th:text="${profile.address ?: 'Chưa cập nhật'}">Địa chỉ</td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-muted">Ngày tham gia:</th>
+                                        <td th:text="${profile.createdAt != null} ? ${#temporals.format(profile.createdAt, 'dd/MM/yyyy HH:mm')} : ''">01/01/2025</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-end">
+                        <a th:href="@{/profile/edit}" class="btn btn-primary me-2">Chỉnh sửa hồ sơ</a>
+                        <a th:href="@{/profile/change-password}" class="btn btn-outline-secondary">Đổi mật khẩu</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
