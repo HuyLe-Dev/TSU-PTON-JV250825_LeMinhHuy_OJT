@@ -2,64 +2,65 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Smart Cinema</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Smart Cinema</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand fw-bold" th:href="@{/admin/dashboard}">SMART CINEMA - ADMIN</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" th:href="@{/admin/movies}">Quản lý Phim</a>
-                <a class="nav-link" th:href="@{/admin/showtimes}">Quản lý Suất chiếu</a>
-                <a class="nav-link text-warning" th:href="@{/auth/logout}">Đăng xuất</a>
-            </div>
-        </div>
-    </nav>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" th:href="@{/admin/dashboard}">SMART CINEMA - ADMIN</a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" th:href="@{/admin/movies}">Quản lý Phim</a>
+        <a class="nav-link" th:href="@{/admin/showtimes}">Quản lý Suất chiếu</a>
+        <a class="nav-link" th:href="@{/profile}">Hồ sơ</a>
+        <a class="nav-link text-warning" th:href="@{/auth/logout}">Đăng xuất</a>
+      </div>
+    </div>
+  </nav>
 
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-12">
-                <h2>Dashboard Quản trị viên</h2>
-                <p class="text-muted">Chào mừng bạn đến trang quản trị hệ thống Smart Cinema.</p>
-            </div>
-        </div>
-
-        <div class="row mt-4">
-            <div class="col-md-4 mb-3">
-                <div class="card bg-primary text-white shadow">
-                    <div class="card-body">
-                        <h5 class="card-title">Quản lý Phim</h5>
-                        <p class="card-text">Thêm, sửa, xóa phim trong hệ thống.</p>
-                        <a th:href="@{/admin/movies}" class="btn btn-light btn-sm">Truy cập</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card bg-success text-white shadow">
-                    <div class="card-body">
-                        <h5 class="card-title">Quản lý Suất chiếu</h5>
-                        <p class="card-text">Tạo lịch chiếu, kiểm tra xung đột phòng.</p>
-                        <a th:href="@{/admin/showtimes}" class="btn btn-light btn-sm">Truy cập</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card bg-info text-white shadow">
-                    <div class="card-body">
-                        <h5 class="card-title">Báo cáo Doanh thu</h5>
-                        <p class="card-text">Xem thống kê doanh thu theo tháng.</p>
-                        <a href="#" class="btn btn-light btn-sm">Truy cập</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div class="container mt-4">
+    <div class="row">
+      <div class="col-12">
+        <h2>Dashboard Quản trị viên</h2>
+        <p class="text-muted">Chào mừng bạn đến trang quản trị hệ thống Smart Cinema.</p>
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="row mt-4">
+      <div class="col-md-4 mb-3">
+        <div class="card bg-primary text-white shadow">
+          <div class="card-body">
+            <h5 class="card-title">Quản lý Phim</h5>
+            <p class="card-text">Thêm, sửa, xóa phim trong hệ thống.</p>
+            <a th:href="@{/admin/movies}" class="btn btn-light btn-sm">Truy cập</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="card bg-success text-white shadow">
+          <div class="card-body">
+            <h5 class="card-title">Quản lý Suất chiếu</h5>
+            <p class="card-text">Tạo lịch chiếu, kiểm tra xung đột phòng.</p>
+            <a th:href="@{/admin/showtimes}" class="btn btn-light btn-sm">Truy cập</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4 mb-3">
+        <div class="card bg-info text-white shadow">
+          <div class="card-body">
+            <h5 class="card-title">Báo cáo Doanh thu</h5>
+            <p class="card-text">Xem thống kê doanh thu theo tháng.</p>
+            <a href="#" class="btn btn-light btn-sm">Truy cập</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

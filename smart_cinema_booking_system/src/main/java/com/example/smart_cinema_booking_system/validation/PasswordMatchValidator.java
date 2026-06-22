@@ -1,22 +1,22 @@
 package com.example.smart_cinema_booking_system.validation;
 
-import com.example.smart_cinema_booking_system.dto.request.RegisterRequestDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
 /**
  * Validator cho annotation @PasswordMatch.
- * So sánh password và confirmPassword trong RegisterRequestDTO.
+ * Dùng chung cho bất kỳ DTO nào implement PasswordConfirmable.
  */
-public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch, RegisterRequestDTO> {
+public class PasswordMatchValidator implements ConstraintValidator<PasswordMatch, PasswordConfirmable> {
 
     @Override
-    public boolean isValid(RegisterRequestDTO dto, ConstraintValidatorContext context) {
+    public boolean isValid(PasswordConfirmable dto, ConstraintValidatorContext context) {
         if (dto.getPassword() == null || dto.getConfirmPassword() == null) {
             return false;
         }
 
         boolean isMatch = dto.getPassword().equals(dto.getConfirmPassword());
+
 
         if (!isMatch) {
             // Gắn lỗi vào trường confirmPassword để hiển thị trên form

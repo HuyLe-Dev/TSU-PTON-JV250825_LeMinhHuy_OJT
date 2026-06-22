@@ -1,8 +1,10 @@
 package com.example.smart_cinema_booking_system.entity;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.smart_cinema_booking_system.enums.Gender;
 import com.example.smart_cinema_booking_system.enums.Role;
 
 import jakarta.persistence.*;
@@ -40,6 +42,16 @@ public class User extends BaseEntity {
 
     @Column(length = 255)
     private String address;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 10)
+    private Gender gender;
+
+    @Column(name = "avatar_url", length = 500)
+    private String avatarUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
