@@ -5,9 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -34,15 +34,8 @@ public class Room extends BaseEntity {
 
     @Column(name = "seats_y")
     private Integer seatsY;
-
-    // Sử dụng @JdbcTypeCode để map List trong Java thành kiểu JSON trong DB
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "vip_seats", columnDefinition = "json")
-    private List<String> vipSeats;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "couple_seats", columnDefinition = "json")
-    private List<String> coupleSeats;
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Seat> seats = new ArrayList<>();
 
     private Boolean status;
 }
