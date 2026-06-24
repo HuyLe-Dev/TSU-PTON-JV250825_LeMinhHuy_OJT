@@ -98,8 +98,5 @@ public class AdminController {
         return "redirect:/admin/movies";
     }
 
-    @GetMapping("/showtimes")
-    public String manageShowtimes() {
-        return "admin/showtimes";
-    }
+
 }
