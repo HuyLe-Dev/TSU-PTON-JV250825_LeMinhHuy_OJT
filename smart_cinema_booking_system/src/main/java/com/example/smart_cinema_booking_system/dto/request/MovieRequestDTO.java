@@ -27,6 +27,7 @@ public class MovieRequestDTO {
     private Integer duration;
 
     @NotNull(message = "Ngày phát hành không được để trống")
+    @org.springframework.format.annotation.DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate releaseDate;
 
     private String language;
