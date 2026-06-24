@@ -5,13 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+
 
 import com.example.smart_cinema_booking_system.enums.BookingStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -48,8 +48,6 @@ public class Booking extends BaseEntity {
     @Column(name = "booking_status")
     private BookingStatus bookingStatus;
 
-    // Lưu danh sách ghế đã đặt dưới dạng mảng JSON (vd: ["A1", "A2", "B5"])
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "booking_seat_array", columnDefinition = "json")
-    private List<String> bookingSeatArray;
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Ticket> tickets = new ArrayList<>();
 }
