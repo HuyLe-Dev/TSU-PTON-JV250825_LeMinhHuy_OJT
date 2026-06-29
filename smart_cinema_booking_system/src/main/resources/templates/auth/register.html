@@ -2,109 +2,112 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký thành viên - Smart Cinema</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: #141e30;
-            background: -webkit-linear-gradient(to right, #243b55, #141e30);
-            background: linear-gradient(to right, #243b55, #141e30);
-            min-height: 100vh;
-        }
-
-        .card {
-            border: none;
-            border-radius: 15px;
-        }
-
-        .card-header {
-            border-top-left-radius: 15px !important;
-            border-top-right-radius: 15px !important;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng ký - Smart Cinema</title>
+  <link rel="stylesheet" href="../../static/css/auth.css" th:href="@{/css/auth.css}">
+  <link rel="icon" href="../../static/images/logo.png" th:href="@{/images/logo.png}" type="image/png">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 
-<body class="d-flex align-items-center">
+<body>
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="card shadow-lg my-5">
-                    <div class="card-header bg-primary text-white text-center py-3">
-                        <h4 class="mb-0 fw-bold">SMART CINEMA</h4>
-                        <small class="text-white-50">Đăng ký tài khoản thành viên mới</small>
-                    </div>
-                    <div class="card-body p-4">
+  <!-- Logo -->
+  <div class="auth-logo">
+    <a th:href="@{/}">
+      <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo">
+      Smart Cinema
+    </a>
+  </div>
 
-                        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show"
-                            role="alert">
-                            <span th:text="${errorMessage}"></span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+  <!-- Register Card -->
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      <h1>Đăng ký tài khoản</h1>
 
-                        <form th:action="@{/auth/register}" th:object="${registerDTO}" method="post" novalidate>
+      <!-- Error message -->
+      <div th:if="${errorMessage}" class="alert-auth error">
+        <i class="bx bx-error-circle"></i>
+        <span th:text="${errorMessage}">Lỗi</span>
+      </div>
 
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Họ và tên</label>
-                                <input type="text" th:field="*{fullName}"
-                                    th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''"
-                                    class="form-control" placeholder="Nhập họ và tên của bạn...">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}"
-                                    th:errors="*{fullName}"></div>
-                            </div>
+      <form th:action="@{/auth/register}" th:object="${registerDTO}" method="post" novalidate>
 
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Tên đăng nhập</label>
-                                <input type="text" th:field="*{username}"
-                                    th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''"
-                                    class="form-control" placeholder="Từ 4 đến 50 ký tự...">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}"
-                                    th:errors="*{username}"></div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Địa chỉ Email</label>
-                                <input type="email" th:field="*{email}"
-                                    th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''"
-                                    class="form-control" placeholder="vi_du@gmail.com...">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
-                                    th:errors="*{email}"></div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">Mật khẩu</label>
-                                <input type="password" th:field="*{password}"
-                                    th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''"
-                                    class="form-control" placeholder="Tối thiểu 6 ký tự...">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}"
-                                    th:errors="*{password}"></div>
-                            </div>
-
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">Xác nhận mật khẩu</label>
-                                <input type="password" th:field="*{confirmPassword}"
-                                    th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
-                                    class="form-control" placeholder="Nhập lại mật khẩu...">
-                                <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}"
-                                    th:errors="*{confirmPassword}"></div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">TẠO TÀI
-                                KHOẢN</button>
-                        </form>
-                    </div>
-                    <div class="card-footer text-center bg-transparent border-0 pb-4">
-                        <span class="text-muted">Bạn đã có tài khoản?</span>
-                        <a th:href="@{/auth/login}" class="text-decoration-none fw-bold">Đăng nhập tại đây</a>
-                    </div>
-                </div>
-            </div>
+        <div class="form-group">
+          <label for="fullName">Họ và tên</label>
+          <input type="text" id="fullName" th:field="*{fullName}"
+            th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''" placeholder="Nhập họ và tên...">
+          <span class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="form-group">
+          <label for="username">Tên đăng nhập</label>
+          <input type="text" id="username" th:field="*{username}"
+            th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''" placeholder="Từ 4 đến 50 ký tự...">
+          <span class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Địa chỉ Email</label>
+          <input type="email" id="email" th:field="*{email}"
+            th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" placeholder="vi_du@gmail.com...">
+          <span class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Mật khẩu</label>
+          <input type="password" id="password" th:field="*{password}"
+            th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''" placeholder="Tối thiểu 6 ký tự...">
+          <i class="bx bx-show toggle-password" onclick="togglePass('password', this)"></i>
+          <span class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Xác nhận mật khẩu</label>
+          <input type="password" id="confirmPassword" th:field="*{confirmPassword}"
+            th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
+            placeholder="Nhập lại mật khẩu...">
+          <i class="bx bx-show toggle-password" onclick="togglePass('confirmPassword', this)"></i>
+          <span class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}"
+            th:errors="*{confirmPassword}"></span>
+        </div>
+
+        <button type="submit" class="btn-auth-submit">TẠO TÀI KHOẢN</button>
+      </form>
+
+      <div class="auth-footer-text">
+        Đã có tài khoản?
+        <a th:href="@{/auth/login}">Đăng nhập tại đây</a>
+      </div>
+
+      <div class="auth-help">
+        <a th:href="@{/}">← Về trang chủ</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom -->
+  <div class="auth-bottom">
+    <span>&copy; 2026 Smart Cinema</span>
+    <a href="#">Điều khoản</a>
+    <a href="#">Bảo mật</a>
+    <a href="#">Trợ giúp</a>
+  </div>
+
+  <script>
+    function togglePass(fieldId, icon) {
+      var input = document.getElementById(fieldId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('bx-show');
+        icon.classList.add('bx-hide');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('bx-hide');
+        icon.classList.add('bx-show');
+      }
+    }
+  </script>
 </body>
 
 </html>
