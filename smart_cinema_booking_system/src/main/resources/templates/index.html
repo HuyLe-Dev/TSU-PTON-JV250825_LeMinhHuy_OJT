@@ -2,48 +2,257 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Smart Cinema - Trang chủ</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Cinema - Trang chủ</title>
+    <link rel="stylesheet" th:href="@{/css/home.css}">
+    <link rel="icon" th:href="@{/images/logo.png}" type="image/png">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand fw-bold" th:href="@{/}">SMART CINEMA</a>
-      <div class="navbar-nav ms-auto">
-        <a class="nav-link active" th:href="@{/}">Trang chủ</a>
 
-        <!-- Hiển thị khi CHƯA đăng nhập -->
-        <span sec:authorize="!isAuthenticated()">
-          <a class="nav-link" th:href="@{/auth/login}">Đăng nhập</a>
-          <a class="nav-link" th:href="@{/auth/register}">Đăng ký</a>
-        </span>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar-cinema">
+        <a th:href="@{/}" class="logo">
+            <img th:src="@{/images/logo.png}" alt="Smart Cinema" style="height: 40px; margin-right: 8px; vertical-align: middle;">
+            Smart Cinema
+        </a>
 
-        <!-- Hiển thị khi ĐÃ đăng nhập -->
-        <span sec:authorize="isAuthenticated()">
-          <a class="nav-link" th:href="@{/profile}">Hồ sơ</a>
+        <ul class="nav-links">
+            <li><a href="#" class="active">Trang chủ</a></li>
+            <li><a href="#now-showing">Đang chiếu</a></li>
+            <li><a href="#coming-soon">Sắp chiếu</a></li>
+        </ul>
 
-          <!-- Link riêng cho từng role -->
-          <a sec:authorize="hasRole('ADMIN')" class="nav-link text-info" th:href="@{/admin/dashboard}">Admin</a>
-          <a sec:authorize="hasRole('STAFF')" class="nav-link text-info" th:href="@{/staff/dashboard}">Nhân viên</a>
-          <a sec:authorize="hasRole('USER')" class="nav-link" th:href="@{/user/bookings}">Lịch sử vé</a>
+        <div class="nav-right">
+            <!-- Search -->
+            <div class="search-box">
+                <input type="text" placeholder="Tìm phim...">
+                <i class="bx bx-search search-icon"></i>
+                <div class="search-results-dropdown">
+                    <th:block th:each="movie : ${nowShowing}">
+                        <a href="#" class="search-result-item"
+                           th:attr="data-title=${movie.title}">
+                            <img th:src="${movie.posterUrl != null ? movie.posterUrl : '/images/logo.png'}"
+                                 th:alt="${movie.title}">
+                            <div class="info">
+                                <h4 th:text="${movie.title}">Tên phim</h4>
+                                <p>
+                                    <span th:if="${movie.genres != null && !movie.genres.isEmpty()}"
+                                          th:text="${movie.genres[0].genreName}"></span>
+                                    <span th:if="${movie.releaseDate != null}"
+                                          th:text="' | ' + ${movie.releaseDate.year}"></span>
+                                </p>
+                            </div>
+                        </a>
+                    </th:block>
+                    <th:block th:each="movie : ${comingSoon}">
+                        <a href="#" class="search-result-item"
+                           th:attr="data-title=${movie.title}">
+                            <img th:src="${movie.posterUrl != null ? movie.posterUrl : '/images/logo.png'}"
+                                 th:alt="${movie.title}">
+                            <div class="info">
+                                <h4 th:text="${movie.title}">Tên phim</h4>
+                                <p>
+                                    <span th:if="${movie.genres != null && !movie.genres.isEmpty()}"
+                                          th:text="${movie.genres[0].genreName}"></span>
+                                    <span> | Sắp chiếu</span>
+                                </p>
+                            </div>
+                        </a>
+                    </th:block>
+                </div>
+            </div>
 
-          <a class="nav-link text-warning" th:href="@{/auth/logout}">Đăng xuất</a>
-        </span>
-      </div>
+            <!-- Auth buttons -->
+            <span sec:authorize="!isAuthenticated()">
+                <a class="btn-auth btn-login" th:href="@{/auth/login}">Đăng nhập</a>
+                <a class="btn-auth btn-register" th:href="@{/auth/register}">Đăng ký</a>
+            </span>
+
+            <span sec:authorize="isAuthenticated()">
+                <a sec:authorize="hasRole('ADMIN')" class="btn-auth btn-login" th:href="@{/admin/dashboard}">Quản trị</a>
+                <a sec:authorize="hasRole('STAFF')" class="btn-auth btn-login" th:href="@{/staff/dashboard}">Nhân viên</a>
+                <a class="btn-profile" th:href="@{/profile}" title="Hồ sơ">
+                    <i class="bx bx-user"></i>
+                </a>
+                <a class="btn-auth btn-login" th:href="@{/auth/logout}" style="color: #e50914; border-color: #e50914;">
+                    <i class="bx bx-log-out"></i>
+                </a>
+            </span>
+        </div>
+    </nav>
+
+    <!-- ===== HERO SECTION ===== -->
+    <section class="hero" th:if="${featured != null}">
+        <div class="hero-backdrop"
+             th:style="'background-image: url(' + ${featured.posterUrl != null ? featured.posterUrl : ''} + ')'">
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="bx bx-play-circle"></i>
+                <span>Đang chiếu</span>
+            </div>
+
+            <h1 class="hero-title" th:text="${featured.title}">Phim nổi bật</h1>
+
+            <div class="hero-meta">
+                <span class="genre-tag"
+                      th:if="${featured.genres != null && !featured.genres.isEmpty()}"
+                      th:text="${#strings.listJoin(featured.genres.![genreName], ', ')}">Thể loại</span>
+                <span class="year" th:if="${featured.releaseDate != null}"
+                      th:text="${featured.releaseDate.year}">2025</span>
+                <span class="duration" th:if="${featured.duration != null}"
+                      th:text="${featured.duration} + ' phút'">120 phút</span>
+                <span class="age-badge" th:if="${featured.ageRating != null}"
+                      th:text="${featured.ageRating}">T13</span>
+            </div>
+
+            <p class="hero-description" th:text="${featured.description}">
+                Mô tả phim sẽ hiển thị ở đây...
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#now-showing" class="btn-play">
+                    <i class="bx bx-movie-play"></i> Đặt vé ngay
+                </a>
+                <button class="btn-trailer" th:if="${featured.trailerUrl != null}"
+                        th:attr="data-trailer=${featured.trailerUrl}">
+                    <i class="bx bx-play"></i> Xem trailer
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hero fallback khi chưa có phim -->
+    <section class="hero" th:if="${featured == null}">
+        <div class="hero-backdrop" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);">
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">Smart Cinema</h1>
+            <p class="hero-description">Hệ thống đặt vé rạp chiếu phim trực tuyến. Khám phá những bộ phim đang chiếu và sắp chiếu tại đây!</p>
+            <div class="hero-buttons">
+                <a th:href="@{/auth/register}" class="btn-play" sec:authorize="!isAuthenticated()">
+                    <i class="bx bx-user-plus"></i> Đăng ký ngay
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== PHIM ĐANG CHIẾU ===== -->
+    <section class="section" id="now-showing" data-carousel>
+        <div class="section-header">
+            <h2 class="section-title">Phim đang chiếu</h2>
+            <div class="section-nav" th:if="${nowShowing != null && !nowShowing.isEmpty()}">
+                <button class="btn-prev"><i class="bx bx-chevron-left"></i></button>
+                <button class="btn-next"><i class="bx bx-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="movie-carousel" th:if="${nowShowing != null && !nowShowing.isEmpty()}">
+            <th:block th:each="movie : ${nowShowing}">
+                <div class="movie-card" data-hero
+                     th:attr="data-hero-poster=${movie.posterUrl},
+                              data-hero-title=${movie.title},
+                              data-hero-desc=${movie.description},
+                              data-hero-trailer=${movie.trailerUrl},
+                              data-hero-genres=${movie.genres != null && !movie.genres.isEmpty() ? #strings.listJoin(movie.genres.![genreName], ', ') : ''},
+                              data-hero-year=${movie.releaseDate != null ? movie.releaseDate.year : ''},
+                              data-hero-duration=${movie.duration},
+                              data-hero-age=${movie.ageRating}">
+                    <div class="poster-wrap">
+                        <img th:src="${movie.posterUrl != null ? movie.posterUrl : '/images/logo.png'}"
+                             th:alt="${movie.title}">
+                        <span class="status-badge now-showing">Đang chiếu</span>
+                        <div class="play-icon">
+                            <i class="bx bx-play" style="color: white; font-size: 1.4rem;"></i>
+                        </div>
+                        <div class="overlay"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 th:text="${movie.title}">Tên phim</h3>
+                        <div class="card-meta">
+                            <span th:if="${movie.releaseDate != null}" th:text="${movie.releaseDate.year}">2025</span>
+                            <span th:if="${movie.duration != null}" th:text="${movie.duration} + ' phút'">120p</span>
+                            <span th:if="${movie.ageRating != null}" th:text="${movie.ageRating}">T13</span>
+                        </div>
+                        <div class="card-genres"
+                             th:if="${movie.genres != null && !movie.genres.isEmpty()}"
+                             th:text="${#strings.listJoin(movie.genres.![genreName], ', ')}">Thể loại</div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+
+        <!-- Trạng thái rỗng -->
+        <div class="empty-state" th:if="${nowShowing == null || nowShowing.isEmpty()}">
+            <i class="bx bx-film"></i>
+            <p>Hiện tại chưa có phim đang chiếu</p>
+        </div>
+    </section>
+
+    <!-- ===== PHIM SẮP CHIẾU ===== -->
+    <section class="section" id="coming-soon" data-carousel>
+        <div class="section-header">
+            <h2 class="section-title">Phim sắp chiếu</h2>
+            <div class="section-nav" th:if="${comingSoon != null && !comingSoon.isEmpty()}">
+                <button class="btn-prev"><i class="bx bx-chevron-left"></i></button>
+                <button class="btn-next"><i class="bx bx-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <div class="movie-carousel" th:if="${comingSoon != null && !comingSoon.isEmpty()}">
+            <th:block th:each="movie : ${comingSoon}">
+                <div class="movie-card">
+                    <div class="poster-wrap">
+                        <img th:src="${movie.posterUrl != null ? movie.posterUrl : '/images/logo.png'}"
+                             th:alt="${movie.title}">
+                        <span class="status-badge coming-soon">Sắp chiếu</span>
+                        <div class="play-icon" th:if="${movie.trailerUrl != null}"
+                             th:attr="data-trailer=${movie.trailerUrl}"
+                             onclick="event.stopPropagation();">
+                            <i class="bx bx-play" style="color: white; font-size: 1.4rem;"></i>
+                        </div>
+                        <div class="overlay"></div>
+                    </div>
+                    <div class="card-info">
+                        <h3 th:text="${movie.title}">Tên phim</h3>
+                        <div class="card-meta">
+                            <span th:if="${movie.releaseDate != null}" th:text="${movie.releaseDate.year}">2025</span>
+                            <span th:if="${movie.duration != null}" th:text="${movie.duration} + ' phút'">120p</span>
+                            <span th:if="${movie.ageRating != null}" th:text="${movie.ageRating}">T13</span>
+                        </div>
+                        <div class="card-genres"
+                             th:if="${movie.genres != null && !movie.genres.isEmpty()}"
+                             th:text="${#strings.listJoin(movie.genres.![genreName], ', ')}">Thể loại</div>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+
+        <!-- Trạng thái rỗng -->
+        <div class="empty-state" th:if="${comingSoon == null || comingSoon.isEmpty()}">
+            <i class="bx bx-calendar"></i>
+            <p>Chưa có thông tin phim sắp chiếu</p>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer-cinema">
+        <p>&copy; 2025 Smart Cinema. Hệ thống đặt vé rạp chiếu phim trực tuyến.</p>
+    </footer>
+
+    <!-- ===== TRAILER MODAL ===== -->
+    <div class="trailer-modal" id="trailerModal">
+        <div class="modal-content">
+            <button class="close-modal"><i class="bx bx-x"></i></button>
+            <iframe src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        </div>
     </div>
-  </nav>
 
-  <div class="container mt-4">
-    <div class="text-center">
-      <h1>Chào mừng đến Smart Cinema</h1>
-      <p class="lead text-muted">Hệ thống đặt vé rạp chiếu phim trực tuyến</p>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:src="@{/js/home.js}"></script>
 </body>
 
 </html>
