@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Đăng nhập - Smart Cinema</title>
-  <link rel="stylesheet" th:href="@{/css/auth.css}">
-  <link rel="icon" th:href="@{/images/logo.png}" type="image/png">
+  <link rel="stylesheet" href="../../static/css/auth.css" th:href="@{/css/auth.css}">
+  <link rel="icon" href="../../static/images/logo.png" th:href="@{/images/logo.png}" type="image/png">
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 
@@ -14,8 +14,8 @@
 
   <!-- Logo -->
   <div class="auth-logo">
-    <a th:href="@{/}">
-      <img th:src="@{/images/logo.png}" alt="Logo">
+    <a href="/" th:href="@{/}">
+      <img src="../../static/images/logo.png" th:src="@{/images/logo.png}" alt="Logo">
       Smart Cinema
     </a>
   </div>
@@ -26,13 +26,13 @@
       <h1>Đăng nhập</h1>
 
       <!-- Success message (from register redirect) -->
-      <div th:if="${successMessage}" class="alert-auth success">
+      <div th:if="${successMessage}" class="alert-auth success" style="display:none" th:style="''">
         <i class="bx bx-check-circle"></i>
         <span th:text="${successMessage}">Thành công</span>
       </div>
 
       <!-- Error message -->
-      <div th:if="${errorMessage}" class="alert-auth error">
+      <div th:if="${errorMessage}" class="alert-auth error" style="display:none" th:style="''">
         <i class="bx bx-error-circle"></i>
         <span th:text="${errorMessage}">Lỗi</span>
       </div>
