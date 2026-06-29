@@ -62,12 +62,12 @@
       </div>
 
       <!-- Auth buttons -->
-      <span sec:authorize="!isAuthenticated()">
+      <th:block sec:authorize="!isAuthenticated()">
         <a class="btn-auth btn-login" th:href="@{/auth/login}">Đăng nhập</a>
         <a class="btn-auth btn-register" th:href="@{/auth/register}">Đăng ký</a>
-      </span>
+      </th:block>
 
-      <span sec:authorize="isAuthenticated()">
+      <th:block sec:authorize="isAuthenticated()">
         <a sec:authorize="hasRole('ADMIN')" class="btn-auth btn-login" th:href="@{/admin/dashboard}">Quản trị</a>
         <a sec:authorize="hasRole('STAFF')" class="btn-auth btn-login" th:href="@{/staff/dashboard}">Nhân viên</a>
         <a class="btn-profile" th:href="@{/profile}" title="Hồ sơ">
@@ -76,7 +76,7 @@
         <a class="btn-auth btn-login" th:href="@{/auth/logout}" style="color: #e50914; border-color: #e50914;">
           <i class="bx bx-log-out"></i>
         </a>
-      </span>
+      </th:block>
     </div>
   </nav>
 
@@ -108,7 +108,7 @@
       </p>
 
       <div class="hero-buttons">
-        <a href="#now-showing" class="btn-play">
+        <a th:href="@{/movies/{id}(id=${featured.movieId})}" class="btn-play">
           <i class="bx bx-movie-play"></i> Đặt vé ngay
         </a>
         <button class="btn-trailer" th:if="${featured.trailerUrl != null}"
@@ -147,7 +147,7 @@
 
     <div class="movie-carousel" th:if="${nowShowing != null && !nowShowing.isEmpty()}">
       <th:block th:each="movie : ${nowShowing}">
-        <div class="movie-card" data-hero th:attr="data-hero-poster=${movie.posterUrl},
+        <div class="movie-card" th:onclick="'window.location.href=\'/movies/' + ${movie.movieId} + '\''" style="cursor: pointer;" data-hero th:attr="data-hero-poster=${movie.posterUrl},
                               data-hero-title=${movie.title},
                               data-hero-desc=${movie.description},
                               data-hero-trailer=${movie.trailerUrl},
@@ -196,7 +196,7 @@
 
     <div class="movie-carousel" th:if="${comingSoon != null && !comingSoon.isEmpty()}">
       <th:block th:each="movie : ${comingSoon}">
-        <div class="movie-card">
+        <div class="movie-card" th:onclick="'window.location.href=\'/movies/' + ${movie.movieId} + '\''" style="cursor: pointer;">
           <div class="poster-wrap">
             <img th:src="${movie.posterUrl != null ? movie.posterUrl : '/images/logo.png'}" th:alt="${movie.title}">
             <span class="status-badge coming-soon">Sắp chiếu</span>

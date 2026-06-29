@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi Tiết Phim - Smart Cinema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/}">SMART CINEMA</a>
+            <div class="navbar-nav ms-auto">
+                <a th:if="${#authorization.expression('isAnonymous()')}" class="nav-link" th:href="@{/auth/login}">Đăng nhập</a>
+                <a th:if="${#authorization.expression('isAuthenticated()')}" class="nav-link" th:href="@{/profile}">Hồ sơ</a>
+                <a th:if="${#authorization.expression('isAuthenticated()')}" class="nav-link text-warning" th:href="@{/auth/logout}">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 mb-5">
+        <div class="row">
+            <div class="col-md-4">
+                <img th:if="${movie.posterUrl != null}" th:src="${movie.posterUrl}" class="img-fluid rounded shadow" alt="Poster">
+                <img th:unless="${movie.posterUrl != null}" src="https://via.placeholder.com/300x400?text=No+Image" class="img-fluid rounded shadow" alt="Poster">
+            </div>
+            <div class="col-md-8">
+                <h1 class="fw-bold mb-3" th:text="${movie.title}">Tên Phim</h1>
+                <p class="text-muted mb-2"><strong class="text-dark">Thể loại:</strong> 
+                    <span th:each="g, iterStat : ${movie.genres}" th:text="${g.genreName} + ${!iterStat.last ? ', ' : ''}"></span>
+                </p>
+                <p class="text-muted mb-2"><strong class="text-dark">Thời lượng:</strong> <span th:text="${movie.duration} + ' phút'"></span></p>
+                <p class="text-muted mb-2"><strong class="text-dark">Khởi chiếu:</strong> <span th:text="${#temporals.format(movie.releaseDate, 'dd/MM/yyyy')}"></span></p>
+                <p class="text-muted mb-4"><strong class="text-dark">Ngôn ngữ:</strong> <span th:text="${movie.language}"></span></p>
+                
+                <h5 class="fw-bold">Mô tả</h5>
+                <p th:text="${movie.description}">Mô tả nội dung phim...</p>
+                
+                <hr class="my-4">
+                
+                <h4 class="fw-bold mb-3">Lịch Chiếu</h4>
+                
+                <div class="d-flex flex-wrap gap-2">
+                    <th:block th:each="st : ${showtimes}">
+                        <a th:if="${st.status.name() != 'CANCELLED'}" 
+                           th:href="@{/user/book/{id}(id=${st.showtimeId})}" 
+                           class="btn btn-outline-primary p-3 text-start shadow-sm"
+                           style="min-width: 150px;">
+                            <div class="fw-bold mb-1" th:text="${#temporals.format(st.startTime, 'HH:mm')}">19:00</div>
+                            <div class="small text-muted mb-1" th:text="${#temporals.format(st.startTime, 'dd/MM/yyyy')}">12/10/2026</div>
+                            <div class="badge bg-secondary" th:text="${st.room.roomName}">Phòng 1</div>
+                        </a>
+                    </th:block>
+                </div>
+                
+                <p th:if="${showtimes == null or showtimes.isEmpty()}" class="text-muted mt-2">Hiện chưa có lịch chiếu cho phim này.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

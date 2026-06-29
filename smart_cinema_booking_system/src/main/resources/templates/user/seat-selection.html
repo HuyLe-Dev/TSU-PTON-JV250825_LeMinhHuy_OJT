@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Ghế - Smart Cinema</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .screen {
+            background-color: #ddd;
+            height: 50px;
+            border-radius: 5px;
+            margin-bottom: 40px;
+            transform: perspective(200px) rotateX(-5deg);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .seat {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 8px 8px 4px 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid transparent;
+        }
+        .seat:hover:not(.booked) {
+            transform: scale(1.1);
+        }
+        .seat.NORMAL { background-color: #4CAF50; color: white; }
+        .seat.VIP { background-color: #FFC107; color: white; }
+        .seat.COUPLE { background-color: #E91E63; color: white; grid-column: span 2; }
+        
+        .seat.selected { border: 3px solid #000; opacity: 0.8; transform: scale(1.1); box-shadow: 0 0 10px rgba(0,0,0,0.5);}
+        .seat.booked { background-color: #9e9e9e !important; cursor: not-allowed; opacity: 0.5; }
+        
+        .legend-box { width: 20px; height: 20px; border-radius: 4px; display: inline-block; vertical-align: middle; }
+    </style>
+</head>
+
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold" th:href="@{/}">SMART CINEMA</a>
+            <div class="navbar-nav ms-auto">
+                <span class="nav-link text-white">Xin chào, <span th:text="${#authentication.name}">User</span></span>
+                <a class="nav-link text-warning" th:href="@{/auth/logout}">Đăng xuất</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mb-5">
+        <div class="row">
+            <!-- Khu vực sơ đồ ghế -->
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body p-4 text-center">
+                        <h4 class="mb-4">Màn Hình</h4>
+                        <div class="screen d-flex align-items-center justify-content-center text-muted fw-bold">SCREEN</div>
+                        
+                        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+                        
+                        <div id="seat-map" class="mx-auto" th:style="'display: grid; grid-template-columns: repeat(' + ${room.seatsX} + ', 1fr); gap: 10px; max-width: 800px;'">
+                            <div th:each="seat : ${seatsInfo}" 
+                                 th:class="'seat ' + ${seat.seatType} + (${seat.isBooked} ? ' booked' : '')"
+                                 th:data-seat-id="${seat.seatId}"
+                                 th:data-seat-name="${seat.seatName}"
+                                 th:data-seat-type="${seat.seatType}"
+                                 th:data-is-booked="${seat.isBooked}"
+                                 th:text="${seat.seatName}">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center mt-5 gap-4">
+                            <div><span class="legend-box bg-success"></span> Ghế Thường</div>
+                            <div><span class="legend-box bg-warning"></span> Ghế VIP (+20K)</div>
+                            <div><span class="legend-box" style="background-color: #E91E63;"></span> Ghế Đôi (+50K)</div>
+                            <div><span class="legend-box bg-secondary"></span> Đã Đặt</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khu vực Thanh toán -->
+            <div class="col-lg-4">
+                <div class="card shadow-sm sticky-top" style="top: 20px;">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold mb-3 border-bottom pb-2">Thông Tin Hóa Đơn</h5>
+                        
+                        <p class="mb-1 text-muted">Phim</p>
+                        <h6 class="fw-bold text-primary" th:text="${showtime.movie.title}">Tên Phim</h6>
+                        
+                        <div class="row mt-3">
+                            <div class="col-6">
+                                <p class="mb-1 text-muted">Ngày chiếu</p>
+                                <p class="fw-bold" th:text="${#temporals.format(showtime.startTime, 'dd/MM/yyyy')}"></p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1 text-muted">Giờ chiếu</p>
+                                <p class="fw-bold text-danger" th:text="${#temporals.format(showtime.startTime, 'HH:mm')}"></p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1 text-muted">Phòng</p>
+                                <p class="fw-bold" th:text="${room.roomName}"></p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1 text-muted">Giá vé gốc</p>
+                                <p class="fw-bold" th:text="${#numbers.formatDecimal(showtime.ticketPrice, 0, 'COMMA', 0, 'POINT')} + ' đ'" id="base-price" th:data-price="${showtime.ticketPrice}"></p>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="mb-3">
+                            <p class="text-muted mb-2">Ghế đang chọn:</p>
+                            <div id="selected-seats-list" class="d-flex flex-wrap gap-1">
+                                <span class="text-muted small">Chưa chọn ghế nào</span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h6 class="mb-0 fw-bold">Tổng tiền:</h6>
+                            <h4 class="mb-0 fw-bold text-success" id="total-price-display">0 đ</h4>
+                        </div>
+
+                        <form th:action="@{/user/book/submit}" th:object="${bookingDTO}" method="post" id="booking-form">
+                            <input type="hidden" th:field="*{showtimeId}">
+                            <!-- Chỗ chứa input hidden mảng ghế -->
+                            <div id="hidden-inputs-container"></div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Phương thức thanh toán</label>
+                                <select class="form-select" th:field="*{paymentMethod}">
+                                    <option value="CASH">Tiền mặt tại quầy</option>
+                                    <option value="VNPAY">Cổng thanh toán VNPay</option>
+                                    <option value="MOMO">Ví MoMo</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" id="btn-submit" disabled>Thanh Toán Bằng Giữ Chỗ</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const seats = document.querySelectorAll('.seat');
+            const selectedSeatsList = document.getElementById('selected-seats-list');
+            const hiddenInputsContainer = document.getElementById('hidden-inputs-container');
+            const totalPriceDisplay = document.getElementById('total-price-display');
+            const btnSubmit = document.getElementById('btn-submit');
+            const basePrice = parseFloat(document.getElementById('base-price').getAttribute('data-price'));
+            
+            let selectedSeats = [];
+
+            seats.forEach(seat => {
+                seat.addEventListener('click', function() {
+                    const isBooked = this.getAttribute('data-is-booked') === 'true';
+                    if (isBooked) return;
+
+                    const seatId = this.getAttribute('data-seat-id');
+                    const seatName = this.getAttribute('data-seat-name');
+                    const seatType = this.getAttribute('data-seat-type');
+
+                    if (this.classList.contains('selected')) {
+                        // Bỏ chọn
+                        this.classList.remove('selected');
+                        selectedSeats = selectedSeats.filter(s => s.id !== seatId);
+                    } else {
+                        // Chọn
+                        this.classList.add('selected');
+                        selectedSeats.push({ id: seatId, name: seatName, type: seatType });
+                    }
+
+                    updateCheckoutPanel();
+                });
+            });
+
+            function updateCheckoutPanel() {
+                // Update danh sách ghế hiển thị
+                if (selectedSeats.length === 0) {
+                    selectedSeatsList.innerHTML = '<span class="text-muted small">Chưa chọn ghế nào</span>';
+                    btnSubmit.disabled = true;
+                } else {
+                    selectedSeatsList.innerHTML = selectedSeats.map(s => 
+                        `<span class="badge bg-dark">${s.name}</span>`
+                    ).join('');
+                    btnSubmit.disabled = false;
+                }
+
+                // Cập nhật Hidden Inputs cho Form Submit
+                hiddenInputsContainer.innerHTML = '';
+                selectedSeats.forEach(s => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'seatIds';
+                    input.value = s.id;
+                    hiddenInputsContainer.appendChild(input);
+                });
+
+                // Tính tổng tiền
+                let total = 0;
+                selectedSeats.forEach(s => {
+                    let price = basePrice;
+                    if (s.type === 'VIP') price += 20000;
+                    if (s.type === 'COUPLE') price += 50000;
+                    total += price;
+                });
+
+                totalPriceDisplay.textContent = total.toLocaleString('vi-VN') + ' đ';
+            }
+        });
+    </script>
+</body>
+</html>
