@@ -8,9 +8,12 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.smart_cinema_booking_system.entity.Showtime;
+import com.example.smart_cinema_booking_system.enums.ShowtimeStatus;
+import java.util.List;
 
 @Repository
 public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
+    List<Showtime> findByMovie_MovieIdAndStatusNotOrderByStartTimeAsc(Long movieId, ShowtimeStatus status);
 
     @Query("SELECT COUNT(s) FROM Showtime s WHERE s.room.roomId = :roomId AND s.startTime < :newEndTime AND s.endTime > :newStartTime AND s.status != 'CANCELLED'")
     long countOverlappingShowtimes(@Param("roomId") Long roomId, 
