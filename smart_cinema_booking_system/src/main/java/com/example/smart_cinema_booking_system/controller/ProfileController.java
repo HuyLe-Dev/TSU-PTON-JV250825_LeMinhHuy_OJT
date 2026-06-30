@@ -6,6 +6,9 @@ import com.example.smart_cinema_booking_system.dto.response.ProfileResponseDTO;
 import com.example.smart_cinema_booking_system.enums.Gender;
 import com.example.smart_cinema_booking_system.exception.BusinessException;
 import com.example.smart_cinema_booking_system.service.ProfileService;
+import com.example.smart_cinema_booking_system.service.BookingService;
+import com.example.smart_cinema_booking_system.dto.response.BookingHistoryDTO;
+import java.util.List;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -29,6 +32,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class ProfileController {
 
     private final ProfileService profileService;
+    private final BookingService bookingService;
 
     /**
      * Xem hồ sơ cá nhân.
@@ -110,5 +114,16 @@ public class ProfileController {
             model.addAttribute("errorMessage", e.getMessage());
             return "profile/change-password";
         }
+    }
+
+    /**
+     * Xem lịch sử đặt vé.
+     */
+    @GetMapping("/history")
+    public String viewHistory(Authentication authentication, Model model) {
+        String username = authentication.getName();
+        List<BookingHistoryDTO> history = bookingService.getBookingHistory(username);
+        model.addAttribute("history", history);
+        return "profile/history";
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.smart_cinema_booking_system.dto.request.BookingRequestDTO;
 import com.example.smart_cinema_booking_system.dto.response.SeatInfoDTO;
+import com.example.smart_cinema_booking_system.dto.response.BookingHistoryDTO;
 import com.example.smart_cinema_booking_system.entity.Booking;
 import com.example.smart_cinema_booking_system.entity.Seat;
 import com.example.smart_cinema_booking_system.entity.Showtime;
@@ -100,5 +101,27 @@ public class BookingService {
         booking = bookingRepository.save(booking);
         
         return booking.getBookingId();
+    }
+
+    public List<BookingHistoryDTO> getBookingHistory(String username) {
+        List<Booking> bookings = bookingRepository.findByUser_UsernameOrderByBookingDateDesc(username);
+        return bookings.stream().map(b -> {
+            BookingHistoryDTO dto = new BookingHistoryDTO();
+            dto.setBookingId(b.getBookingId());
+            dto.setMovieTitle(b.getShowtime().getMovie().getTitle());
+            dto.setPosterUrl(b.getShowtime().getMovie().getPosterUrl());
+            dto.setRoomName(b.getShowtime().getRoom().getRoomName());
+            dto.setShowtimeStart(b.getShowtime().getStartTime());
+            dto.setBookingDate(b.getBookingDate());
+            dto.setTotalAmount(b.getTotalAmount());
+            dto.setPaymentMethod(b.getPaymentMethod());
+            dto.setStatus(b.getBookingStatus());
+            
+            String seats = b.getTickets().stream()
+                    .map(t -> t.getSeat().getSeatName())
+                    .collect(Collectors.joining(", "));
+            dto.setSeats(seats);
+            return dto;
+        }).collect(Collectors.toList());
     }
 }
