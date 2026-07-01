@@ -18,6 +18,8 @@ import com.example.smart_cinema_booking_system.exception.BusinessException;
 import com.example.smart_cinema_booking_system.repository.MovieRepository;
 import com.example.smart_cinema_booking_system.repository.RoomRepository;
 import com.example.smart_cinema_booking_system.repository.ShowtimeRepository;
+import com.example.smart_cinema_booking_system.repository.TicketRepository;
+import java.util.ArrayList;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +30,42 @@ public class ShowtimeService {
     private final ShowtimeRepository showtimeRepository;
     private final MovieRepository movieRepository;
     private final RoomRepository roomRepository;
+    private final TicketRepository ticketRepository;
+
+    @Transactional
+    public List<ShowtimeResponseDTO> getAvailableShowtimesForMovie(Long movieId) {
+        List<Showtime> showtimes = showtimeRepository.findByMovie_MovieIdAndStatusNotOrderByStartTimeAsc(movieId, ShowtimeStatus.CANCELLED);
+        List<ShowtimeResponseDTO> dtos = new ArrayList<>();
+        LocalDateTime now = LocalDateTime.now();
+
+        for (Showtime s : showtimes) {
+            boolean changed = false;
+
+            // 1. Kiểm tra Quá giờ
+            if (s.getStartTime().isBefore(now) && s.getStatus() == ShowtimeStatus.OPEN) {
+                s.setStatus(ShowtimeStatus.CLOSED);
+                changed = true;
+            }
+
+            // 2. Kiểm tra Hết vé
+            if (s.getStatus() == ShowtimeStatus.OPEN) {
+                int bookedSeats = ticketRepository.findBookedSeatIdsByShowtimeId(s.getShowtimeId()).size();
+                int totalSeats = s.getRoom().getSeats().size();
+                if (bookedSeats >= totalSeats) {
+                    s.setStatus(ShowtimeStatus.CLOSED);
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                showtimeRepository.save(s);
+            }
+
+            dtos.add(mapToResponseDTO(s));
+        }
+
+        return dtos;
+    }
 
     public List<ShowtimeResponseDTO> getAllShowtimes() {
         return showtimeRepository.findAll(Sort.by(Sort.Direction.DESC, "startTime")).stream()

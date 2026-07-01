@@ -13,6 +13,7 @@ import com.example.smart_cinema_booking_system.repository.ShowtimeRepository;
 import com.example.smart_cinema_booking_system.dto.response.MovieResponseDTO;
 import com.example.smart_cinema_booking_system.enums.MovieStatus;
 import com.example.smart_cinema_booking_system.service.MovieService;
+import com.example.smart_cinema_booking_system.service.ShowtimeService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +24,7 @@ public class HomeController {
     private final MovieService movieService;
     private final MovieRepository movieRepository;
     private final ShowtimeRepository showtimeRepository;
+    private final ShowtimeService showtimeService;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -59,7 +61,7 @@ public class HomeController {
         var movie = movieRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("Không tìm thấy phim!"));
         model.addAttribute("movie", movie);
-        model.addAttribute("showtimes", showtimeRepository.findAll().stream().filter(s -> s.getMovie().getMovieId().equals(id)).toList());
+        model.addAttribute("showtimes", showtimeService.getAvailableShowtimesForMovie(id));
         return "movie-detail";
     }
 }

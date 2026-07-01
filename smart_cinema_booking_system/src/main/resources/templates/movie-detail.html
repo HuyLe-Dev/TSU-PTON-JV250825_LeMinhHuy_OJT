@@ -44,14 +44,24 @@
                 
                 <div class="d-flex flex-wrap gap-2">
                     <th:block th:each="st : ${showtimes}">
-                        <a th:if="${st.status.name() != 'CANCELLED'}" 
+                        <!-- Suất chiếu mở bán -->
+                        <a th:if="${st.status.name() == 'OPEN'}" 
                            th:href="@{/user/book/{id}(id=${st.showtimeId})}" 
                            class="btn btn-outline-primary p-3 text-start shadow-sm"
                            style="min-width: 150px;">
                             <div class="fw-bold mb-1" th:text="${#temporals.format(st.startTime, 'HH:mm')}">19:00</div>
                             <div class="small text-muted mb-1" th:text="${#temporals.format(st.startTime, 'dd/MM/yyyy')}">12/10/2026</div>
-                            <div class="badge bg-secondary" th:text="${st.room.roomName}">Phòng 1</div>
+                            <div class="badge bg-secondary" th:text="${st.roomName}">Phòng 1</div>
                         </a>
+                        <!-- Suất chiếu đã đóng (Quá giờ/Sold out) -->
+                        <div th:if="${st.status.name() == 'CLOSED'}" 
+                           class="btn btn-outline-secondary p-3 text-start shadow-sm position-relative disabled"
+                           style="min-width: 150px; opacity: 0.6; cursor: not-allowed;">
+                            <div class="fw-bold mb-1 text-decoration-line-through" th:text="${#temporals.format(st.startTime, 'HH:mm')}">19:00</div>
+                            <div class="small text-muted mb-1 text-decoration-line-through" th:text="${#temporals.format(st.startTime, 'dd/MM/yyyy')}">12/10/2026</div>
+                            <div class="badge bg-secondary" th:text="${st.roomName}">Phòng 1</div>
+                            <span class="position-absolute top-0 start-50 translate-middle badge rounded-pill bg-danger" style="font-size: 0.7rem;">Hết vé/Đã chiếu</span>
+                        </div>
                     </th:block>
                 </div>
                 
