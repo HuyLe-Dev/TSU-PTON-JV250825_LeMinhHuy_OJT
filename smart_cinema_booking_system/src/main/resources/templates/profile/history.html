@@ -2,85 +2,160 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch sử đặt vé - Smart Cinema</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lịch sử đặt vé - Smart Cinema</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand fw-bold" th:href="@{/}">SMART CINEMA</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" th:href="@{/}">Trang chủ</a>
-                <a class="nav-link" th:href="@{/profile}">Hồ sơ</a>
-                <a class="nav-link text-warning" th:href="@{/auth/logout}">Đăng xuất</a>
-            </div>
-        </div>
-    </nav>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand fw-bold" th:href="@{/}">SMART CINEMA</a>
+      <div class="navbar-nav ms-auto">
+        <a class="nav-link" th:href="@{/}">Trang chủ</a>
+        <a class="nav-link" th:href="@{/profile}">Hồ sơ</a>
+        <a class="nav-link text-warning" th:href="@{/auth/logout}">Đăng xuất</a>
+      </div>
+    </div>
+  </nav>
 
-    <div class="container mt-4 mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="fw-bold">Lịch sử đặt vé</h3>
-            <a th:href="@{/profile}" class="btn btn-outline-secondary"><i class='bx bx-arrow-back'></i> Quay lại Hồ sơ</a>
-        </div>
-
-        <!-- Trạng thái rỗng -->
-        <div th:if="${history == null || history.isEmpty()}" class="text-center py-5 bg-white shadow-sm rounded">
-            <i class='bx bx-receipt text-muted' style="font-size: 4rem;"></i>
-            <h5 class="text-muted mt-3">Bạn chưa có giao dịch nào.</h5>
-            <a th:href="@{/}" class="btn btn-primary mt-2">Khám phá phim ngay</a>
-        </div>
-
-        <!-- Danh sách giao dịch -->
-        <div class="row" th:if="${history != null && !history.isEmpty()}">
-            <div class="col-12 mb-3" th:each="item : ${history}">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
-                        <span class="text-muted small">
-                            <i class='bx bx-time'></i> Đặt lúc: <span th:text="${#temporals.format(item.bookingDate, 'dd/MM/yyyy HH:mm')}"></span>
-                        </span>
-                        <span class="badge" 
-                              th:classappend="${item.status.name() == 'PAID' ? 'bg-success' : (item.status.name() == 'PENDING' ? 'bg-warning text-dark' : 'bg-secondary')}"
-                              th:text="${item.status}">PAID</span>
-                    </div>
-                    <div class="card-body p-0">
-                        <div class="row g-0">
-                            <!-- Poster -->
-                            <div class="col-md-2 d-none d-md-block text-center bg-dark" style="min-height: 150px;">
-                                <img th:if="${item.posterUrl != null}" th:src="${item.posterUrl}" class="img-fluid h-100 w-100" style="object-fit: cover; opacity: 0.8;" alt="Poster">
-                            </div>
-                            <!-- Thông tin -->
-                            <div class="col-md-10 p-4">
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <h5 class="fw-bold text-primary mb-1" th:text="${item.movieTitle}">Tên Phim</h5>
-                                        <p class="mb-2">
-                                            <span class="fw-bold text-danger me-3"><i class='bx bx-camera-movie'></i> <span th:text="${item.roomName}"></span></span>
-                                            <span class="text-dark"><i class='bx bx-calendar-event'></i> Suất chiếu: <strong th:text="${#temporals.format(item.showtimeStart, 'HH:mm - dd/MM/yyyy')}"></strong></span>
-                                        </p>
-                                        <p class="mb-0">
-                                            <span class="text-muted">Ghế:</span> 
-                                            <strong class="text-dark" th:text="${item.seats}">A1, A2</strong>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-4 text-md-end mt-3 mt-md-0 border-start ps-md-4">
-                                        <p class="text-muted mb-1 small">Tổng tiền thanh toán</p>
-                                        <h4 class="fw-bold text-danger mb-1" th:text="${#numbers.formatDecimal(item.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">150,000 đ</h4>
-                                        <span class="badge bg-light text-dark border"><i class='bx bx-credit-card'></i> <span th:text="${item.paymentMethod}">Tiền mặt</span></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+  <div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="fw-bold">Lịch sử đặt vé</h3>
+      <a th:href="@{/profile}" class="btn btn-outline-secondary"><i class='bx bx-arrow-back'></i> Quay lại Hồ sơ</a>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Flash messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+      <i class='bx bx-check-circle'></i> <span th:text="${successMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+      <i class='bx bx-error-circle'></i> <span th:text="${errorMessage}"></span>
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Trạng thái rỗng -->
+    <div th:if="${history == null || history.isEmpty()}" class="text-center py-5 bg-white shadow-sm rounded">
+      <i class='bx bx-receipt text-muted' style="font-size: 4rem;"></i>
+      <h5 class="text-muted mt-3">Bạn chưa có giao dịch nào.</h5>
+      <a th:href="@{/}" class="btn btn-primary mt-2">Khám phá phim ngay</a>
+    </div>
+
+    <!-- Danh sách giao dịch -->
+    <div class="row" th:if="${history != null && !history.isEmpty()}">
+      <div class="col-12 mb-3" th:each="item : ${history}">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-white border-bottom-0 d-flex justify-content-between align-items-center py-3">
+            <span class="text-muted small">
+              <i class='bx bx-time'></i> Đặt lúc: <span
+                th:text="${#temporals.format(item.bookingDate, 'dd/MM/yyyy HH:mm')}"></span>
+            </span>
+            <span class="badge"
+              th:classappend="${item.status.name() == 'PAID' ? 'bg-success' : (item.status.name() == 'PENDING' ? 'bg-warning text-dark' : 'bg-secondary')}"
+              th:text="${item.status}">PAID</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="row g-0">
+              <!-- Poster -->
+              <div class="col-md-2 d-none d-md-block text-center bg-dark" style="min-height: 150px;">
+                <img th:if="${item.posterUrl != null}" th:src="${item.posterUrl}" class="img-fluid h-100 w-100"
+                  style="object-fit: cover; opacity: 0.8;" alt="Poster">
+              </div>
+              <!-- Thông tin -->
+              <div class="col-md-10 p-4">
+                <div class="row">
+                  <div class="col-md-8">
+                    <h5 class="fw-bold text-primary mb-1" th:text="${item.movieTitle}">Tên Phim</h5>
+                    <p class="mb-2">
+                      <span class="fw-bold text-danger me-3"><i class='bx bx-camera-movie'></i> <span
+                          th:text="${item.roomName}"></span></span>
+                      <span class="text-dark"><i class='bx bx-calendar-event'></i> Suất chiếu: <strong
+                          th:text="${#temporals.format(item.showtimeStart, 'HH:mm - dd/MM/yyyy')}"></strong></span>
+                    </p>
+                    <p class="mb-0">
+                      <span class="text-muted">Ghế:</span>
+                      <strong class="text-dark" th:text="${item.seats}">A1, A2</strong>
+                    </p>
+                  </div>
+                  <div class="col-md-4 text-md-end mt-3 mt-md-0 border-start ps-md-4">
+                    <p class="text-muted mb-1 small">Tổng tiền thanh toán</p>
+                    <h4 class="fw-bold text-danger mb-1"
+                      th:text="${#numbers.formatDecimal(item.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' đ'">150,000 đ
+                    </h4>
+                    <span class="badge bg-light text-dark border"><i class='bx bx-credit-card'></i> <span
+                        th:text="${item.paymentMethod}">Tiền mặt</span></span>
+
+                    <!-- CORE-09: Nút Hủy vé — mở modal xác nhận -->
+                    <button th:if="${item.cancellable}" type="button" class="btn btn-outline-danger btn-sm w-100 mt-2"
+                      data-bs-toggle="modal" data-bs-target="#cancelModal"
+                      th:attr="data-booking-id=${item.bookingId}, data-movie-title=${item.movieTitle}, data-seats=${item.seats}">
+                      <i class='bx bx-x-circle'></i> Hủy vé
+                    </button>
+                    <!-- Hiển thị lý do không thể hủy -->
+                    <div th:if="${!item.cancellable && item.status.name() != 'CANCELLED'}" class="mt-2">
+                      <small class="text-muted"><i class='bx bx-lock'></i> Quá hạn hủy (trước 24h)</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== MODAL XÁC NHẬN HỦY VÉ ===== -->
+  <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title fw-bold text-danger" id="cancelModalLabel">
+            <i class='bx bx-error-circle'></i> Xác nhận hủy vé
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2">Bạn có chắc chắn muốn hủy vé này?</p>
+          <div class="bg-light rounded p-3">
+            <p class="mb-1"><strong>Phim:</strong> <span id="cancelMovieTitle"></span></p>
+            <p class="mb-0"><strong>Ghế:</strong> <span id="cancelSeats"></span></p>
+          </div>
+          <div class="alert alert-warning mt-3 mb-0 small">
+            <i class='bx bx-info-circle'></i> Hành động này không thể hoàn tác. Ghế sẽ được giải phóng cho khách hàng
+            khác.
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Không, giữ vé</button>
+          <form id="cancelForm" method="post">
+            <button type="submit" class="btn btn-danger">
+              <i class='bx bx-x-circle'></i> Xác nhận hủy
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Khi modal mở, set thông tin booking vào modal content
+    document.getElementById('cancelModal').addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var bookingId = button.getAttribute('data-booking-id');
+      var movieTitle = button.getAttribute('data-movie-title');
+      var seats = button.getAttribute('data-seats');
+
+      document.getElementById('cancelMovieTitle').textContent = movieTitle;
+      document.getElementById('cancelSeats').textContent = seats;
+      document.getElementById('cancelForm').action = '/profile/history/cancel/' + bookingId;
+    });
+  </script>
 </body>
+
 </html>

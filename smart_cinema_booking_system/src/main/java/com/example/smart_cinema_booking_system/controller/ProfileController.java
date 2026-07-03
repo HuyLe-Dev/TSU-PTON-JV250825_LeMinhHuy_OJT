@@ -1,25 +1,29 @@
 package com.example.smart_cinema_booking_system.controller;
 
-import com.example.smart_cinema_booking_system.dto.request.ChangePasswordDTO;
-import com.example.smart_cinema_booking_system.dto.request.ProfileUpdateDTO;
-import com.example.smart_cinema_booking_system.dto.response.ProfileResponseDTO;
-import com.example.smart_cinema_booking_system.enums.Gender;
-import com.example.smart_cinema_booking_system.exception.BusinessException;
-import com.example.smart_cinema_booking_system.service.ProfileService;
-import com.example.smart_cinema_booking_system.service.BookingService;
-import com.example.smart_cinema_booking_system.dto.response.BookingHistoryDTO;
 import java.util.List;
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.example.smart_cinema_booking_system.dto.request.ChangePasswordDTO;
+import com.example.smart_cinema_booking_system.dto.request.ProfileUpdateDTO;
+import com.example.smart_cinema_booking_system.dto.response.BookingHistoryDTO;
+import com.example.smart_cinema_booking_system.dto.response.ProfileResponseDTO;
+import com.example.smart_cinema_booking_system.enums.Gender;
+import com.example.smart_cinema_booking_system.exception.BusinessException;
+import com.example.smart_cinema_booking_system.service.BookingService;
+import com.example.smart_cinema_booking_system.service.ProfileService;
+
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 /**
  * Controller quản lý Hồ sơ cá nhân (CORE-03).
@@ -62,10 +66,10 @@ public class ProfileController {
      */
     @PostMapping(value = "/edit", consumes = "multipart/form-data")
     public String processEdit(@Valid @ModelAttribute("profileDTO") ProfileUpdateDTO profileDTO,
-                              BindingResult result,
-                              Authentication authentication,
-                              Model model,
-                              RedirectAttributes redirectAttributes) {
+            BindingResult result,
+            Authentication authentication,
+            Model model,
+            RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             model.addAttribute("genders", Gender.values());
             return "profile/edit";
@@ -97,10 +101,10 @@ public class ProfileController {
      */
     @PostMapping("/change-password")
     public String processChangePassword(@Valid @ModelAttribute("passwordDTO") ChangePasswordDTO passwordDTO,
-                                        BindingResult result,
-                                        Authentication authentication,
-                                        Model model,
-                                        RedirectAttributes redirectAttributes) {
+            BindingResult result,
+            Authentication authentication,
+            Model model,
+            RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "profile/change-password";
         }
@@ -125,5 +129,21 @@ public class ProfileController {
         List<BookingHistoryDTO> history = bookingService.getBookingHistory(username);
         model.addAttribute("history", history);
         return "profile/history";
+    }
+
+    /**
+     * CORE-09: Hủy vé chủ động.
+     */
+    @PostMapping("/history/cancel/{bookingId}")
+    public String cancelBooking(@PathVariable Long bookingId,
+            Authentication authentication,
+            RedirectAttributes redirectAttributes) {
+        try {
+            bookingService.cancelBooking(bookingId, authentication.getName());
+            redirectAttributes.addFlashAttribute("successMessage", "Hủy vé thành công! Ghế đã được giải phóng.");
+        } catch (BusinessException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/profile/history";
     }
 }

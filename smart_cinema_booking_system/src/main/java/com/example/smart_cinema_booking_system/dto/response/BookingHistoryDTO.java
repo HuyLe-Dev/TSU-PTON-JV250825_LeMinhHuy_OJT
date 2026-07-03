@@ -25,4 +25,5 @@ public class BookingHistoryDTO {
     private String paymentMethod;
     private BookingStatus status;
     private String seats;
+    private boolean cancellable;
 }

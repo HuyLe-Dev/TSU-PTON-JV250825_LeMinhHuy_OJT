@@ -6,17 +6,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.example.smart_cinema_booking_system.entity.Genre;
 import com.example.smart_cinema_booking_system.entity.Movie;
 import com.example.smart_cinema_booking_system.entity.Room;
 import com.example.smart_cinema_booking_system.entity.Seat;
+import com.example.smart_cinema_booking_system.entity.User;
 import com.example.smart_cinema_booking_system.enums.MovieStatus;
+import com.example.smart_cinema_booking_system.enums.Role;
 import com.example.smart_cinema_booking_system.enums.SeatType;
 import com.example.smart_cinema_booking_system.repository.GenreRepository;
 import com.example.smart_cinema_booking_system.repository.MovieRepository;
 import com.example.smart_cinema_booking_system.repository.RoomRepository;
+import com.example.smart_cinema_booking_system.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,12 +33,43 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final GenreRepository genreRepository;
     private final RoomRepository roomRepository;
     private final MovieRepository movieRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
+        seedUsers();
         seedGenres();
         seedRoomsAndSeats();
         seedMovies();
+    }
+
+    private void seedUsers() {
+        if (userRepository.count() == 0) {
+            log.info("Seeding Users...");
+            String encodedPassword = passwordEncoder.encode("123456");
+
+            createUser("admin", encodedPassword, "admin@smartcinema.vn", "Quản Trị Viên", "0901000001", Role.ADMIN);
+            createUser("staff", encodedPassword, "staff@smartcinema.vn", "Nhân Viên Rạp", "0901000002", Role.STAFF);
+            createUser("user1", encodedPassword, "user1@gmail.com", "Nguyễn Văn A", "0901000003", Role.USER);
+            createUser("user2", encodedPassword, "user2@gmail.com", "Trần Thị B", "0901000004", Role.USER);
+            createUser("huyle", encodedPassword, "huy.le@gmail.com", "Lê Minh Huy", "0901000005", Role.USER);
+
+            log.info("Users seeded successfully. (password: 123456)");
+        }
+    }
+
+    private void createUser(String username, String encodedPassword, String email,
+            String fullName, String phone, Role role) {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(encodedPassword);
+        user.setEmail(email);
+        user.setFullName(fullName);
+        user.setPhone(phone);
+        user.setRole(role);
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 
     private void seedGenres() {

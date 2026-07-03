@@ -2,6 +2,7 @@ package com.example.smart_cinema_booking_system.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,8 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.smart_cinema_booking_system.dto.request.BookingRequestDTO;
-import com.example.smart_cinema_booking_system.dto.response.SeatInfoDTO;
 import com.example.smart_cinema_booking_system.dto.response.BookingHistoryDTO;
+import com.example.smart_cinema_booking_system.dto.response.SeatInfoDTO;
 import com.example.smart_cinema_booking_system.entity.Booking;
 import com.example.smart_cinema_booking_system.entity.Seat;
 import com.example.smart_cinema_booking_system.entity.Showtime;
@@ -26,9 +27,11 @@ import com.example.smart_cinema_booking_system.repository.TicketRepository;
 import com.example.smart_cinema_booking_system.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BookingService {
 
     private final BookingRepository bookingRepository;
@@ -95,16 +98,19 @@ public class BookingService {
         }
 
         booking.setTotalAmount(totalAmount);
-        
-        // Due to unique constraint on Tickets (showtime_id, seat_id), 
-        // if another transaction committed the same seat, this save will throw DataIntegrityViolationException.
+
+        // Due to unique constraint on Tickets (showtime_id, seat_id),
+        // if another transaction committed the same seat, this save will throw
+        // DataIntegrityViolationException.
         booking = bookingRepository.save(booking);
-        
+
         return booking.getBookingId();
     }
 
     public List<BookingHistoryDTO> getBookingHistory(String username) {
         List<Booking> bookings = bookingRepository.findByUser_UsernameOrderByBookingDateDesc(username);
+        LocalDateTime now = LocalDateTime.now();
+
         return bookings.stream().map(b -> {
             BookingHistoryDTO dto = new BookingHistoryDTO();
             dto.setBookingId(b.getBookingId());
@@ -116,12 +122,55 @@ public class BookingService {
             dto.setTotalAmount(b.getTotalAmount());
             dto.setPaymentMethod(b.getPaymentMethod());
             dto.setStatus(b.getBookingStatus());
-            
+
             String seats = b.getTickets().stream()
                     .map(t -> t.getSeat().getSeatName())
                     .collect(Collectors.joining(", "));
             dto.setSeats(seats);
+
+            // CORE-09: cho phép hủy nếu chưa CANCELLED và trước 24h so với giờ chiếu
+            boolean canCancel = b.getBookingStatus() != BookingStatus.CANCELLED
+                    && b.getShowtime().getStartTime().minusHours(24).isAfter(now);
+            dto.setCancellable(canCancel);
+
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    /**
+     * CORE-09: Hủy vé chủ động & Giải phóng ghế.
+     */
+    @Transactional
+    public void cancelBooking(Long bookingId, String username) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy đơn đặt vé!"));
+
+        // Kiểm tra quyền sở hữu
+        if (!booking.getUser().getUsername().equals(username)) {
+            log.warn("User [{}] attempted to cancel booking [{}] owned by [{}]",
+                    username, bookingId, booking.getUser().getUsername());
+            throw new BusinessException("Bạn không có quyền hủy đơn này!");
+        }
+
+        // Kiểm tra trạng thái
+        if (booking.getBookingStatus() == BookingStatus.CANCELLED) {
+            throw new BusinessException("Đơn vé này đã được hủy trước đó.");
+        }
+
+        // Kiểm tra thời gian: phải trước 24 giờ so với giờ chiếu
+        LocalDateTime showtimeStart = booking.getShowtime().getStartTime();
+        LocalDateTime cancelDeadline = showtimeStart.minusHours(24);
+
+        if (LocalDateTime.now().isAfter(cancelDeadline)) {
+            String deadlineStr = cancelDeadline.format(DateTimeFormatter.ofPattern("HH:mm dd/MM/yyyy"));
+            throw new BusinessException("Chỉ được hủy vé trước 24 giờ so với giờ chiếu. Hạn cuối: " + deadlineStr);
+        }
+
+        // Cập nhật trạng thái → CANCELLED (ghế tự giải phóng qua query filter)
+        booking.setBookingStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
+
+        log.info("Booking [{}] cancelled by user [{}]. Showtime [{}]. Seats released.",
+                bookingId, username, booking.getShowtime().getShowtimeId());
     }
 }
