@@ -98,6 +98,12 @@ public class BookingService {
         }
 
         booking.setTotalAmount(totalAmount);
+        
+        // Lưu tên ghế vào Booking để history vẫn hiển thị khi ticket bị xóa
+        String seatNames = selectedSeats.stream()
+                .map(Seat::getSeatName)
+                .collect(Collectors.joining(", "));
+        booking.setBookedSeatNames(seatNames);
 
         // Due to unique constraint on Tickets (showtime_id, seat_id),
         // if another transaction committed the same seat, this save will throw
@@ -123,9 +129,14 @@ public class BookingService {
             dto.setPaymentMethod(b.getPaymentMethod());
             dto.setStatus(b.getBookingStatus());
 
-            String seats = b.getTickets().stream()
-                    .map(t -> t.getSeat().getSeatName())
-                    .collect(Collectors.joining(", "));
+            // CORE-09: Lấy tên ghế từ trường bookedSeatNames thay vì từ tickets
+            // (vì khi cancel, tickets có thể đã bị xóa khỏi CSDL để nhả chỗ)
+            String seats = b.getBookedSeatNames();
+            if (seats == null || seats.isEmpty()) {
+                seats = b.getTickets().stream()
+                        .map(t -> t.getSeat().getSeatName())
+                        .collect(Collectors.joining(", "));
+            }
             dto.setSeats(seats);
 
             // CORE-09: cho phép hủy nếu chưa CANCELLED và trước 24h so với giờ chiếu
@@ -166,8 +177,13 @@ public class BookingService {
             throw new BusinessException("Chỉ được hủy vé trước 24 giờ so với giờ chiếu. Hạn cuối: " + deadlineStr);
         }
 
-        // Cập nhật trạng thái → CANCELLED (ghế tự giải phóng qua query filter)
+        // Cập nhật trạng thái → CANCELLED
         booking.setBookingStatus(BookingStatus.CANCELLED);
+        
+        // XÓA các bản ghi Ticket trong Database để nhả UNIQUE CONSTRAINT (showtime_id, seat_id)
+        // Việc này cho phép người khác đặt lại chính ghế đó mà không bị lỗi DataIntegrityViolation
+        booking.getTickets().clear();
+        
         bookingRepository.save(booking);
 
         log.info("Booking [{}] cancelled by user [{}]. Showtime [{}]. Seats released.",

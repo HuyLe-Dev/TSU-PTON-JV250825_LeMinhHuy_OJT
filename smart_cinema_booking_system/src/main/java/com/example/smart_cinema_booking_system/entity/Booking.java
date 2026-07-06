@@ -48,6 +48,9 @@ public class Booking extends BaseEntity {
     @Column(name = "booking_status")
     private BookingStatus bookingStatus;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Column(name = "booked_seat_names", length = 255)
+    private String bookedSeatNames;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Ticket> tickets = new ArrayList<>();
 }
