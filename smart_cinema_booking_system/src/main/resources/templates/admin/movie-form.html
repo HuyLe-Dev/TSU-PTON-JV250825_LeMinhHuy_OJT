@@ -97,8 +97,14 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Poster Phim (Tải ảnh lên)</label>
+                        <label class="form-label">Poster Phim (Khổ dọc)</label>
                         <input type="file" class="form-control" th:field="*{posterFile}" accept="image/*">
+                        <small class="text-muted" th:if="${movieId != null}">Để trống nếu không muốn đổi ảnh mới.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Backdrop (Khổ ngang)</label>
+                        <input type="file" class="form-control" th:field="*{backdropFile}" accept="image/*">
                         <small class="text-muted" th:if="${movieId != null}">Để trống nếu không muốn đổi ảnh mới.</small>
                     </div>
 

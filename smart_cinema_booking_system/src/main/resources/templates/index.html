@@ -83,7 +83,7 @@
   <!-- ===== HERO SECTION ===== -->
   <section class="hero" th:if="${featured != null}">
     <div class="hero-backdrop"
-      th:style="'background-image: url(' + ${featured.posterUrl != null ? featured.posterUrl : ''} + ')'">
+      th:style="'background-image: url(' + ${featured.backdropUrl != null ? featured.backdropUrl : (featured.posterUrl != null ? featured.posterUrl : '')} + ')'">
     </div>
 
     <div class="hero-content">
@@ -148,6 +148,7 @@
     <div class="movie-carousel" th:if="${nowShowing != null && !nowShowing.isEmpty()}">
       <th:block th:each="movie : ${nowShowing}">
         <div class="movie-card" th:onclick="'window.location.href=\'/movies/' + ${movie.movieId} + '\''" style="cursor: pointer;" data-hero th:attr="data-hero-poster=${movie.posterUrl},
+                              data-hero-backdrop=${movie.backdropUrl != null ? movie.backdropUrl : movie.posterUrl},
                               data-hero-title=${movie.title},
                               data-hero-desc=${movie.description},
                               data-hero-trailer=${movie.trailerUrl},

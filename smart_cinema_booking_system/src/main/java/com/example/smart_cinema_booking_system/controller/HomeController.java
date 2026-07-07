@@ -41,11 +41,11 @@ public class HomeController {
         model.addAttribute("nowShowing", nowShowing);
         model.addAttribute("comingSoon", comingSoon);
 
-        // Featured movie: first NOW_SHOWING, fallback to first of all
+        // Featured movie: first NOW_SHOWING, fallback to first COMING_SOON
         if (!nowShowing.isEmpty()) {
             model.addAttribute("featured", nowShowing.get(0));
-        } else if (!allMovies.isEmpty()) {
-            model.addAttribute("featured", allMovies.get(0));
+        } else if (!comingSoon.isEmpty()) {
+            model.addAttribute("featured", comingSoon.get(0));
         }
 
         return "index";
@@ -60,6 +60,11 @@ public class HomeController {
     public String movieDetail(@PathVariable Long id, Model model) {
         var movie = movieRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("Không tìm thấy phim!"));
+        
+        if (movie.getStatus() == MovieStatus.STOPPED) {
+            throw new BusinessException("Phim này hiện đã ngừng chiếu!");
+        }
+        
         model.addAttribute("movie", movie);
         model.addAttribute("showtimes", showtimeService.getAvailableShowtimesForMovie(id));
         return "movie-detail";

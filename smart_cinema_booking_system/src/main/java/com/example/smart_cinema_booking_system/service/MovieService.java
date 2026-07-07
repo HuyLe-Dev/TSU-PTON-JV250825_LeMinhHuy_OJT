@@ -96,8 +96,13 @@ public class MovieService {
         }
 
         if (dto.getPosterFile() != null && !dto.getPosterFile().isEmpty()) {
-            String posterUrl = cloudinaryService.uploadAvatar(dto.getPosterFile(), "movie_" + System.currentTimeMillis());
+            String posterUrl = cloudinaryService.uploadAvatar(dto.getPosterFile(), "movie_poster_" + System.currentTimeMillis());
             movie.setPosterUrl(posterUrl);
+        }
+
+        if (dto.getBackdropFile() != null && !dto.getBackdropFile().isEmpty()) {
+            String backdropUrl = cloudinaryService.uploadAvatar(dto.getBackdropFile(), "movie_backdrop_" + System.currentTimeMillis());
+            movie.setBackdropUrl(backdropUrl);
         }
     }
 
@@ -110,6 +115,7 @@ public class MovieService {
         dto.setReleaseDate(movie.getReleaseDate());
         dto.setLanguage(movie.getLanguage());
         dto.setPosterUrl(movie.getPosterUrl());
+        dto.setBackdropUrl(movie.getBackdropUrl());
         dto.setTrailerUrl(movie.getTrailerUrl());
         dto.setAgeRating(movie.getAgeRating());
         dto.setStatus(movie.getStatus());

@@ -34,6 +34,8 @@ public class MovieRequestDTO {
 
     private MultipartFile posterFile;
 
+    private MultipartFile backdropFile;
+
     private String trailerUrl;
 
     @NotBlank(message = "Giới hạn độ tuổi không được để trống")

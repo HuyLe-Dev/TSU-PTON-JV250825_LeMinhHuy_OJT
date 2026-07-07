@@ -30,9 +30,16 @@ public class AdminController {
 
     private final MovieService movieService;
     private final GenreRepository genreRepository;
+    private final com.example.smart_cinema_booking_system.service.StatsService statsService;
 
     @GetMapping("/dashboard")
-    public String dashboard() {
+    public String dashboard(Model model) {
+        model.addAttribute("monthlyRevenue", statsService.getMonthlyRevenueForCurrentYear());
+        
+        java.util.Map<String, java.math.BigDecimal> topMovies = statsService.getTop5MoviesRevenue();
+        model.addAttribute("topMovieTitles", topMovies.keySet());
+        model.addAttribute("topMovieRevenues", topMovies.values());
+        
         return "admin/dashboard";
     }
 

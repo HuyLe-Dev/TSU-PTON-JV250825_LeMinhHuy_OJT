@@ -19,6 +19,7 @@ public class MovieResponseDTO {
     private LocalDate releaseDate;
     private String language;
     private String posterUrl;
+    private String backdropUrl;
     private String trailerUrl;
     private String ageRating;
     private MovieStatus status;

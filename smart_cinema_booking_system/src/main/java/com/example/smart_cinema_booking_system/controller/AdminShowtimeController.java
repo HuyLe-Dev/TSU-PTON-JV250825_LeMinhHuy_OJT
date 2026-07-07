@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.smart_cinema_booking_system.enums.MovieStatus;
+import java.util.Arrays;
+
 import com.example.smart_cinema_booking_system.dto.request.ShowtimeRequestDTO;
 import com.example.smart_cinema_booking_system.exception.BusinessException;
 import com.example.smart_cinema_booking_system.repository.MovieRepository;
@@ -39,7 +42,7 @@ public class AdminShowtimeController {
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("showtimeDTO", new ShowtimeRequestDTO());
-        model.addAttribute("movies", movieRepository.findAll());
+        model.addAttribute("movies", movieRepository.findByStatusIn(Arrays.asList(MovieStatus.NOW_SHOWING, MovieStatus.COMING_SOON)));
         model.addAttribute("rooms", roomRepository.findAll());
         return "admin/showtime-form";
     }
@@ -50,7 +53,7 @@ public class AdminShowtimeController {
                                 Model model,
                                 RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            model.addAttribute("movies", movieRepository.findAll());
+            model.addAttribute("movies", movieRepository.findByStatusIn(Arrays.asList(MovieStatus.NOW_SHOWING, MovieStatus.COMING_SOON)));
             model.addAttribute("rooms", roomRepository.findAll());
             return "admin/showtime-form";
         }
@@ -60,7 +63,7 @@ public class AdminShowtimeController {
             redirectAttributes.addFlashAttribute("successMessage", "Thêm suất chiếu thành công!");
             return "redirect:/admin/showtimes";
         } catch (BusinessException e) {
-            model.addAttribute("movies", movieRepository.findAll());
+            model.addAttribute("movies", movieRepository.findByStatusIn(Arrays.asList(MovieStatus.NOW_SHOWING, MovieStatus.COMING_SOON)));
             model.addAttribute("rooms", roomRepository.findAll());
             model.addAttribute("errorMessage", e.getMessage());
             return "admin/showtime-form";

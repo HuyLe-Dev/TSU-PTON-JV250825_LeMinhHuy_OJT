@@ -224,7 +224,7 @@ function initHeroSwitch() {
 
   heroCards.forEach(function (card) {
     card.addEventListener('mouseenter', function () {
-      var poster = this.getAttribute('data-hero-poster');
+      var backdrop = this.getAttribute('data-hero-backdrop');
       var title = this.getAttribute('data-hero-title');
       var desc = this.getAttribute('data-hero-desc');
       var trailer = this.getAttribute('data-hero-trailer');
@@ -233,8 +233,8 @@ function initHeroSwitch() {
       var duration = this.getAttribute('data-hero-duration');
       var age = this.getAttribute('data-hero-age');
 
-      if (heroBackdrop && poster) {
-        heroBackdrop.style.backgroundImage = 'url(' + poster + ')';
+      if (heroBackdrop && backdrop) {
+        heroBackdrop.style.backgroundImage = 'url(' + backdrop + ')';
       }
       if (heroTitle && title) heroTitle.textContent = title;
       if (heroDesc && desc) heroDesc.textContent = desc;

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.smart_cinema_booking_system.dto.request.ShowtimeRequestDTO;
 import com.example.smart_cinema_booking_system.dto.response.ShowtimeResponseDTO;
 import com.example.smart_cinema_booking_system.entity.Movie;
+import com.example.smart_cinema_booking_system.enums.MovieStatus;
 import com.example.smart_cinema_booking_system.entity.Room;
 import com.example.smart_cinema_booking_system.entity.Showtime;
 import com.example.smart_cinema_booking_system.enums.ShowtimeStatus;
@@ -34,6 +35,11 @@ public class ShowtimeService {
 
     @Transactional
     public List<ShowtimeResponseDTO> getAvailableShowtimesForMovie(Long movieId) {
+        Movie movie = movieRepository.findById(movieId).orElseThrow(() -> new BusinessException("Không tìm thấy phim!"));
+        if (movie.getStatus() == MovieStatus.STOPPED) {
+            return new ArrayList<>();
+        }
+        
         List<Showtime> showtimes = showtimeRepository.findByMovie_MovieIdAndStatusNotOrderByStartTimeAsc(movieId, ShowtimeStatus.CANCELLED);
         List<ShowtimeResponseDTO> dtos = new ArrayList<>();
         LocalDateTime now = LocalDateTime.now();
