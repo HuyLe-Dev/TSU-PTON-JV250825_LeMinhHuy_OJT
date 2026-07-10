@@ -139,11 +139,20 @@ public class UserBookingController {
     public String paypalSuccess(@RequestParam("token") String paypalOrderId,
                                 RedirectAttributes redirectAttributes) {
         try {
+            // Tìm booking theo paypalOrderId
+            Booking booking = bookingService.findByPaypalOrderId(paypalOrderId);
+
+            // Kiểm tra nếu vé đã được thanh toán (tránh lỗi khi user F5 lại trang)
+            if (booking.getBookingStatus() == com.example.smart_cinema_booking_system.enums.BookingStatus.PAID) {
+                redirectAttributes.addFlashAttribute("successMessage",
+                        "Thanh toán PayPal thành công! Vé đã được xác nhận.");
+                return "redirect:/";
+            }
+
             // Capture payment trên PayPal
             payPalService.captureOrder(paypalOrderId);
 
-            // Tìm booking theo paypalOrderId và cập nhật status → PAID
-            Booking booking = bookingService.findByPaypalOrderId(paypalOrderId);
+            // Cập nhật status → PAID
             bookingService.confirmPayment(booking.getBookingId());
 
             log.info("PayPal payment successful. BookingId: {}, PayPalOrderId: {}",

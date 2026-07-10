@@ -51,17 +51,24 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private void seedUsers() {
-        if (userRepository.count() == 0) {
-            log.info("Seeding Users...");
-            String encodedPassword = passwordEncoder.encode("123456");
+        log.info("Checking and seeding Users...");
+        String encodedPassword = passwordEncoder.encode("123456");
 
+        if (!userRepository.existsByUsername("admin")) {
             createUser("admin", encodedPassword, "admin@smartcinema.vn", "Quản Trị Viên", "0901000001", Role.ADMIN);
+            log.info("Admin user seeded.");
+        }
+        if (!userRepository.existsByUsername("staff")) {
             createUser("staff", encodedPassword, "staff@smartcinema.vn", "Nhân Viên Rạp", "0901000002", Role.STAFF);
+        }
+        if (!userRepository.existsByUsername("user1")) {
             createUser("user1", encodedPassword, "user1@gmail.com", "Nguyễn Văn A", "0901000003", Role.USER);
+        }
+        if (!userRepository.existsByUsername("user2")) {
             createUser("user2", encodedPassword, "user2@gmail.com", "Trần Thị B", "0901000004", Role.USER);
+        }
+        if (!userRepository.existsByUsername("huyle")) {
             createUser("huyle", encodedPassword, "huy.le@gmail.com", "Lê Minh Huy", "0901000005", Role.USER);
-
-            log.info("Users seeded successfully. (password: 123456)");
         }
     }
 
