@@ -113,6 +113,45 @@ public class BookingService {
         return booking.getBookingId();
     }
 
+    /**
+     * Lưu PayPal Order ID vào booking (dùng khi tạo PayPal Order).
+     */
+    @Transactional
+    public void updatePaypalOrderId(Long bookingId, String paypalOrderId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy đơn đặt vé!"));
+        booking.setPaypalOrderId(paypalOrderId);
+        bookingRepository.save(booking);
+    }
+
+    /**
+     * Xác nhận thanh toán thành công (chuyển status sang PAID).
+     */
+    @Transactional
+    public void confirmPayment(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy đơn đặt vé!"));
+        booking.setBookingStatus(BookingStatus.PAID);
+        bookingRepository.save(booking);
+        log.info("Booking [{}] payment confirmed. Status → PAID.", bookingId);
+    }
+
+    /**
+     * Tìm booking theo PayPal Order ID.
+     */
+    public Booking findByPaypalOrderId(String paypalOrderId) {
+        return bookingRepository.findByPaypalOrderId(paypalOrderId)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy đơn đặt vé với PayPal Order: " + paypalOrderId));
+    }
+
+    /**
+     * Tìm booking theo ID.
+     */
+    public Booking getBookingById(Long bookingId) {
+        return bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy đơn đặt vé!"));
+    }
+
     public List<BookingHistoryDTO> getBookingHistory(String username) {
         List<Booking> bookings = bookingRepository.findByUser_UsernameOrderByBookingDateDesc(username);
         LocalDateTime now = LocalDateTime.now();
