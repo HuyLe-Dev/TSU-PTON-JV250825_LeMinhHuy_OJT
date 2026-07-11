@@ -31,4 +31,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
      */
     List<Booking> findByBookingStatusAndPaymentMethodAndBookingDateBefore(
             BookingStatus status, String paymentMethod, LocalDateTime deadline);
+
+    long countByBookingStatusAndBookingDateBetween(BookingStatus status, LocalDateTime start, LocalDateTime end);
 }

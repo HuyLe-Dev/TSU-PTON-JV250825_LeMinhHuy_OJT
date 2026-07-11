@@ -183,8 +183,42 @@ public class BookingService {
                     && b.getShowtime().getStartTime().minusHours(24).isAfter(now);
             dto.setCancellable(canCancel);
 
+            dto.setUsername(b.getUser().getUsername());
+
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    public org.springframework.data.domain.Page<BookingHistoryDTO> getAllBookingsPaged(int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "bookingDate"));
+        org.springframework.data.domain.Page<Booking> bookingPage = bookingRepository.findAll(pageable);
+        
+        return bookingPage.map(b -> {
+            BookingHistoryDTO dto = new BookingHistoryDTO();
+            dto.setBookingId(b.getBookingId());
+            dto.setMovieTitle(b.getShowtime().getMovie().getTitle());
+            dto.setPosterUrl(b.getShowtime().getMovie().getPosterUrl());
+            dto.setRoomName(b.getShowtime().getRoom().getRoomName());
+            dto.setShowtimeStart(b.getShowtime().getStartTime());
+            dto.setBookingDate(b.getBookingDate());
+            dto.setTotalAmount(b.getTotalAmount());
+            dto.setPaymentMethod(b.getPaymentMethod());
+            dto.setStatus(b.getBookingStatus());
+            dto.setUsername(b.getUser().getUsername());
+
+            String seats = b.getBookedSeatNames();
+            if (seats == null || seats.isEmpty()) {
+                seats = b.getTickets().stream()
+                        .map(t -> t.getSeat().getSeatName())
+                        .collect(Collectors.joining(", "));
+            }
+            dto.setSeats(seats);
+
+            // Admin can cancel if not already cancelled
+            dto.setCancellable(b.getBookingStatus() != BookingStatus.CANCELLED);
+
+            return dto;
+        });
     }
 
     /**
@@ -227,5 +261,21 @@ public class BookingService {
 
         log.info("Booking [{}] cancelled by user [{}]. Showtime [{}]. Seats released.",
                 bookingId, username, booking.getShowtime().getShowtimeId());
+    }
+
+    @Transactional
+    public void cancelBookingAdmin(Long bookingId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new BusinessException("Không tìm thấy đơn đặt vé!"));
+
+        if (booking.getBookingStatus() == BookingStatus.CANCELLED) {
+            throw new BusinessException("Đơn vé này đã được hủy trước đó.");
+        }
+
+        booking.setBookingStatus(BookingStatus.CANCELLED);
+        booking.getTickets().clear();
+        bookingRepository.save(booking);
+
+        log.info("Booking [{}] cancelled by ADMIN. Seats released.", bookingId);
     }
 }

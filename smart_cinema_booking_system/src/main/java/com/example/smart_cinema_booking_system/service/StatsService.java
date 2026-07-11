@@ -51,4 +51,11 @@ public class StatsService {
                 )
         );
     }
+
+    public long getTicketsCountForCurrentMonth(com.example.smart_cinema_booking_system.enums.BookingStatus status) {
+        LocalDate now = LocalDate.now();
+        java.time.LocalDateTime startOfMonth = now.withDayOfMonth(1).atStartOfDay();
+        java.time.LocalDateTime endOfMonth = now.plusMonths(1).withDayOfMonth(1).atStartOfDay().minusSeconds(1);
+        return bookingRepository.countByBookingStatusAndBookingDateBetween(status, startOfMonth, endOfMonth);
+    }
 }
