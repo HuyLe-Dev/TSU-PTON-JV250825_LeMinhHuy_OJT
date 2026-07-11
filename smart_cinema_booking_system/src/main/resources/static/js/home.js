@@ -288,4 +288,29 @@ function initMovieCardClick() {
       }
     });
   });
-}
+
+  // ===== TOAST LOGIC =====
+  const toasts = document.querySelectorAll('.toast');
+  toasts.forEach(toast => {
+    // Auto dismiss after 5 seconds
+    const timeout = setTimeout(() => {
+      dismissToast(toast);
+    }, 5000);
+
+    // Close button click
+    const closeBtn = toast.querySelector('.toast-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        clearTimeout(timeout);
+        dismissToast(toast);
+      });
+    }
+  });
+
+  function dismissToast(toast) {
+    toast.classList.add('hiding');
+    toast.addEventListener('animationend', () => {
+      toast.remove();
+    });
+  }
+};

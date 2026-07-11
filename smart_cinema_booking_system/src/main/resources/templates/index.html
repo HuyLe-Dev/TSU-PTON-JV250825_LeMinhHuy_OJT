@@ -11,6 +11,19 @@
 </head>
 
 <body>
+  <!-- ===== TOAST NOTIFICATIONS ===== -->
+  <div class="toast-container" th:if="${successMessage != null || errorMessage != null}">
+    <div class="toast success" th:if="${successMessage != null}">
+      <i class="bx bx-check-circle"></i>
+      <span th:text="${successMessage}"></span>
+      <button class="toast-close"><i class="bx bx-x"></i></button>
+    </div>
+    <div class="toast error" th:if="${errorMessage != null}">
+      <i class="bx bx-error-circle"></i>
+      <span th:text="${errorMessage}"></span>
+      <button class="toast-close"><i class="bx bx-x"></i></button>
+    </div>
+  </div>
 
   <!-- ===== NAVBAR ===== -->
   <nav class="navbar-cinema">
