@@ -27,10 +27,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     /**
      * Tìm các booking PENDING đã quá hạn thanh toán (dùng cho scheduler auto-cancel).
-     * Chỉ tìm booking có paymentMethod = PAYPAL và bookingDate trước thời điểm deadline.
+     * Bất kể phương thức thanh toán là gì, cứ quá hạn là hủy.
      */
-    List<Booking> findByBookingStatusAndPaymentMethodAndBookingDateBefore(
-            BookingStatus status, String paymentMethod, LocalDateTime deadline);
+    List<Booking> findByBookingStatusAndBookingDateBefore(BookingStatus status, LocalDateTime deadline);
 
     long countByBookingStatusAndBookingDateBetween(BookingStatus status, LocalDateTime start, LocalDateTime end);
 }

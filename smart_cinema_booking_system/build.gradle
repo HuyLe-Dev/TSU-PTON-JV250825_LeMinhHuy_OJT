@@ -41,6 +41,13 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // Email
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    
+    // ZXing for QR Code
+    implementation 'com.google.zxing:core:3.5.3'
+    implementation 'com.google.zxing:javase:3.5.3'
+
     // OAuth2 Client
     // implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 

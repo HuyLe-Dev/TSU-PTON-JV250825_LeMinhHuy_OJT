@@ -29,7 +29,7 @@ public class BookingCleanupScheduler {
 
     /**
      * Chạy mỗi 60 giây.
-     * Tìm booking PayPal PENDING đã quá paymentTimeoutMinutes (mặc định 15 phút).
+     * Tìm booking PENDING đã quá paymentTimeoutMinutes (mặc định 15 phút) (áp dụng cho mọi hình thức thanh toán).
      * Hủy booking và xóa tickets để nhả ghế.
      */
     @Scheduled(fixedRate = 60000) // 60 giây
@@ -39,8 +39,7 @@ public class BookingCleanupScheduler {
         LocalDateTime deadline = LocalDateTime.now().minusMinutes(timeoutMinutes);
 
         List<Booking> expiredBookings = bookingRepository
-                .findByBookingStatusAndPaymentMethodAndBookingDateBefore(
-                        BookingStatus.PENDING, "PAYPAL", deadline);
+                .findByBookingStatusAndBookingDateBefore(BookingStatus.PENDING, deadline);
 
         if (expiredBookings.isEmpty()) {
             return;
@@ -52,13 +51,14 @@ public class BookingCleanupScheduler {
             booking.getTickets().clear();
             bookingRepository.save(booking);
 
-            log.info("Auto-cancelled expired PayPal booking. BookingId: {}, User: {}, BookingDate: {}, Timeout: {} minutes",
+            log.info("Auto-cancelled expired booking. BookingId: {}, Method: {}, User: {}, BookingDate: {}, Timeout: {} minutes",
                     booking.getBookingId(),
+                    booking.getPaymentMethod(),
                     booking.getUser().getUsername(),
                     booking.getBookingDate(),
                     timeoutMinutes);
         }
 
-        log.info("Cleanup completed. {} expired PayPal booking(s) cancelled.", expiredBookings.size());
+        log.info("Cleanup completed. {} expired booking(s) cancelled.", expiredBookings.size());
     }
 }

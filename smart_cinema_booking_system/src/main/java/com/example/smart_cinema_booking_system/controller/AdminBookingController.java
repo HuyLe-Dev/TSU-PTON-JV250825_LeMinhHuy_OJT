@@ -12,10 +12,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.smart_cinema_booking_system.enums.BookingStatus;
 import com.example.smart_cinema_booking_system.exception.BusinessException;
 import com.example.smart_cinema_booking_system.service.BookingService;
+import com.example.smart_cinema_booking_system.service.EmailService;
 import com.example.smart_cinema_booking_system.service.StatsService;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -29,6 +29,7 @@ public class AdminBookingController {
 
     private final BookingService bookingService;
     private final StatsService statsService;
+    private final EmailService emailService;
 
     @GetMapping
     public String manageBookings(
@@ -52,6 +53,9 @@ public class AdminBookingController {
     public String confirmPayment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             bookingService.confirmPayment(id);
+            // Async send ticket email
+            emailService.sendTicketEmail(id);
+            
             redirectAttributes.addFlashAttribute("successMessage", "Đã xác nhận thanh toán thành công!");
         } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());

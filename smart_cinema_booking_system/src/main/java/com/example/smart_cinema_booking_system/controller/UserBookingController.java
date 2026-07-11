@@ -20,6 +20,7 @@ import com.example.smart_cinema_booking_system.entity.Booking;
 import com.example.smart_cinema_booking_system.exception.BusinessException;
 import com.example.smart_cinema_booking_system.repository.ShowtimeRepository;
 import com.example.smart_cinema_booking_system.service.BookingService;
+import com.example.smart_cinema_booking_system.service.EmailService;
 import com.example.smart_cinema_booking_system.service.PayPalService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,6 +38,7 @@ public class UserBookingController {
     private final BookingService bookingService;
     private final ShowtimeRepository showtimeRepository;
     private final PayPalService payPalService;
+    private final EmailService emailService;
 
     @GetMapping("/{showtimeId}")
     public String showSeatSelection(@PathVariable Long showtimeId, Model model) {
@@ -154,6 +156,9 @@ public class UserBookingController {
 
             // Cập nhật status → PAID
             bookingService.confirmPayment(booking.getBookingId());
+            
+            // Async send ticket email
+            emailService.sendTicketEmail(booking.getBookingId());
 
             log.info("PayPal payment successful. BookingId: {}, PayPalOrderId: {}",
                     booking.getBookingId(), paypalOrderId);
