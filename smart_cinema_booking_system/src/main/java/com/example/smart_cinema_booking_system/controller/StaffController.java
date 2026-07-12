@@ -7,21 +7,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
  * Controller dành riêng cho Nhân viên rạp (STAFF).
- * Tất cả endpoint /staff/** đã được bảo vệ bởi SecurityConfig (hasRole('STAFF')).
- * Nhân viên có thể: tra cứu mã đơn hàng, xác nhận thanh toán, in vé.
+ * Giao diện Quản lý Đơn hàng đã được gộp chung với Admin tại /admin/bookings.
+ * Controller này chỉ làm nhiệm vụ chuyển hướng (Redirect) nếu Staff lỡ tay gõ URL cũ.
  */
 @Controller
 @RequestMapping("/staff")
-@PreAuthorize("hasRole('STAFF')")
+@PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
 public class StaffController {
 
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "staff/dashboard";
-    }
-
-    @GetMapping("/bookings")
-    public String manageBookings() {
-        return "staff/bookings";
+    @GetMapping({"/dashboard", "/bookings"})
+    public String redirectDashboard() {
+        return "redirect:/admin/bookings";
     }
 }

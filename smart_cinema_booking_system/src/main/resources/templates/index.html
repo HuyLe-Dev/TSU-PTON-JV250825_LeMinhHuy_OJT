@@ -46,7 +46,8 @@
         <i class="bx bx-search search-icon"></i>
         <div class="search-results-dropdown">
           <th:block th:each="movie : ${nowShowing}">
-            <a href="#" class="search-result-item" th:attr="data-title=${movie.title}">
+            <a th:href="@{/movies/{id}(id=${movie.movieId})}" class="search-result-item"
+              th:attr="data-title=${movie.title}">
               <img th:src="${movie.posterUrl != null ? movie.posterUrl : '/images/logo.png'}" th:alt="${movie.title}">
               <div class="info">
                 <h4 th:text="${movie.title}">Tên phim</h4>
@@ -59,7 +60,8 @@
             </a>
           </th:block>
           <th:block th:each="movie : ${comingSoon}">
-            <a href="#" class="search-result-item" th:attr="data-title=${movie.title}">
+            <a th:href="@{/movies/{id}(id=${movie.movieId})}" class="search-result-item"
+              th:attr="data-title=${movie.title}">
               <img th:src="${movie.posterUrl != null ? movie.posterUrl : '/images/logo.png'}" th:alt="${movie.title}">
               <div class="info">
                 <h4 th:text="${movie.title}">Tên phim</h4>
@@ -160,7 +162,8 @@
 
     <div class="movie-carousel" th:if="${nowShowing != null && !nowShowing.isEmpty()}">
       <th:block th:each="movie : ${nowShowing}">
-        <div class="movie-card" th:onclick="'window.location.href=\'/movies/' + ${movie.movieId} + '\''" style="cursor: pointer;" data-hero th:attr="data-hero-poster=${movie.posterUrl},
+        <div class="movie-card" th:onclick="'window.location.href=\'/movies/' + ${movie.movieId} + '\''"
+          style="cursor: pointer;" data-hero th:attr="data-hero-poster=${movie.posterUrl},
                               data-hero-backdrop=${movie.backdropUrl != null ? movie.backdropUrl : movie.posterUrl},
                               data-hero-title=${movie.title},
                               data-hero-desc=${movie.description},
@@ -210,7 +213,8 @@
 
     <div class="movie-carousel" th:if="${comingSoon != null && !comingSoon.isEmpty()}">
       <th:block th:each="movie : ${comingSoon}">
-        <div class="movie-card" th:onclick="'window.location.href=\'/movies/' + ${movie.movieId} + '\''" style="cursor: pointer;">
+        <div class="movie-card" th:onclick="'window.location.href=\'/movies/' + ${movie.movieId} + '\''"
+          style="cursor: pointer;">
           <div class="poster-wrap">
             <img th:src="${movie.posterUrl != null ? movie.posterUrl : '/images/logo.png'}" th:alt="${movie.title}">
             <span class="status-badge coming-soon">Sắp chiếu</span>
@@ -243,7 +247,7 @@
 
   <!-- ===== FOOTER ===== -->
   <footer class="footer-cinema">
-    <p>&copy; 2025 Smart Cinema. Hệ thống đặt vé rạp chiếu phim trực tuyến.</p>
+    <p>&copy; 2026 Smart Cinema. Hệ thống đặt vé rạp chiếu phim trực tuyến.</p>
   </footer>
 
   <!-- ===== TRAILER MODAL ===== -->
