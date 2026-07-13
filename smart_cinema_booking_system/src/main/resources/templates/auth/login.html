@@ -37,18 +37,18 @@
         <span th:text="${errorMessage}">Lỗi</span>
       </div>
 
-      <form th:action="@{/auth/login}" th:object="${loginDTO}" method="post" novalidate>
+      <form th:action="@{/auth/login}" th:object="${loginDTO}" method="post">
 
         <div class="form-group">
           <label for="username">Tên đăng nhập</label>
-          <input type="text" id="username" th:field="*{username}"
+          <input type="text" id="username" th:field="*{username}" required
             th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''" placeholder="Nhập tên đăng nhập...">
           <span class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
         </div>
 
         <div class="form-group">
           <label for="password">Mật khẩu</label>
-          <input type="password" id="password" th:field="*{password}"
+          <input type="password" id="password" th:field="*{password}" required
             th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''" placeholder="Nhập mật khẩu...">
           <i class="bx bx-show toggle-password" onclick="togglePass('password', this)"></i>
           <span class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>

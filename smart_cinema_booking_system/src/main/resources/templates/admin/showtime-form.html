@@ -33,7 +33,7 @@
 
             <div class="mb-3">
                 <label class="form-label">Chọn Phim (*)</label>
-                <select class="form-select" th:field="*{movieId}">
+                <select class="form-select" th:field="*{movieId}" required>
                     <option value="" disabled selected>-- Chọn phim --</option>
                     <option th:each="movie : ${movies}" th:value="${movie.movieId}" th:text="${movie.title} + ' (' + ${movie.duration} + ' phút)'"></option>
                 </select>
@@ -42,7 +42,7 @@
 
             <div class="mb-3">
                 <label class="form-label">Chọn Phòng (*)</label>
-                <select class="form-select" th:field="*{roomId}">
+                <select class="form-select" th:field="*{roomId}" required>
                     <option value="" disabled selected>-- Chọn phòng chiếu --</option>
                     <option th:each="room : ${rooms}" th:value="${room.roomId}" th:text="${room.roomName}"></option>
                 </select>
@@ -51,14 +51,14 @@
 
             <div class="mb-3">
                 <label class="form-label">Giờ bắt đầu (*)</label>
-                <input type="datetime-local" class="form-control" th:field="*{startTime}">
+                <input type="datetime-local" class="form-control" th:field="*{startTime}" required>
                 <div class="text-danger" th:if="${#fields.hasErrors('startTime')}" th:errors="*{startTime}"></div>
                 <small class="text-muted">Hệ thống sẽ cộng thêm 15 phút dọn dẹp vào giờ kết thúc tự động.</small>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Giá vé cơ sở (VNĐ) (*)</label>
-                <input type="number" class="form-control" th:field="*{ticketPrice}">
+                <input type="number" class="form-control" th:field="*{ticketPrice}" required min="1000">
                 <div class="text-danger" th:if="${#fields.hasErrors('ticketPrice')}" th:errors="*{ticketPrice}"></div>
             </div>
 

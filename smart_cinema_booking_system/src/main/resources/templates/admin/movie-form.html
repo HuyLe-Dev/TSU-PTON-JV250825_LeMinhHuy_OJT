@@ -36,7 +36,7 @@
                 <div class="col-md-8">
                     <div class="mb-3">
                         <label class="form-label">Tên phim (*)</label>
-                        <input type="text" class="form-control" th:field="*{title}">
+                        <input type="text" class="form-control" th:field="*{title}" required>
                         <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
                     </div>
 
@@ -48,12 +48,12 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Thời lượng (Phút) (*)</label>
-                            <input type="number" class="form-control" th:field="*{duration}">
+                            <input type="number" class="form-control" th:field="*{duration}" required min="1">
                             <div class="text-danger" th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}"></div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Ngày phát hành (*)</label>
-                            <input type="date" class="form-control" th:field="*{releaseDate}">
+                            <input type="date" class="form-control" th:field="*{releaseDate}" required>
                             <div class="text-danger" th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}"></div>
                         </div>
                     </div>
@@ -65,7 +65,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Giới hạn độ tuổi (*)</label>
-                            <select class="form-select" th:field="*{ageRating}">
+                            <select class="form-select" th:field="*{ageRating}" required>
                                 <option value="P">P (Mọi lứa tuổi)</option>
                                 <option value="C13">C13 (Trên 13 tuổi)</option>
                                 <option value="C16">C16 (Trên 16 tuổi)</option>
@@ -79,7 +79,7 @@
                 <div class="col-md-4">
                     <div class="mb-3">
                         <label class="form-label">Trạng thái (*)</label>
-                        <select class="form-select" th:field="*{status}">
+                        <select class="form-select" th:field="*{status}" required>
                             <option th:each="st : ${statuses}" th:value="${st}" th:text="${st}"></option>
                         </select>
                         <div class="text-danger" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
