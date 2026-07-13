@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
  */
 @Controller
 @RequestMapping("/user")
-@PreAuthorize("hasAnyRole('USER', 'STAFF', 'ADMIN')")
+@PreAuthorize("hasRole('USER')")
 @RequiredArgsConstructor
 public class UserController {
 

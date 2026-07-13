@@ -30,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequestMapping("/user/book")
-@PreAuthorize("hasAnyRole('USER', 'STAFF', 'ADMIN')")
+@PreAuthorize("hasRole('USER')")
 @RequiredArgsConstructor
 @Slf4j
 public class UserBookingController {
