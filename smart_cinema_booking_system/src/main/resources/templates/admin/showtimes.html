@@ -59,7 +59,7 @@
                         <span class="badge bg-info" th:text="${st.status}">Trạng thái</span>
                     </td>
                     <td>
-                        <form th:action="@{/admin/showtimes/delete/{id}(id=${st.showtimeId})}" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa suất chiếu này không?');">
+                        <form th:action="@{/admin/showtimes/delete/{id}(id=${st.showtimeId})}" method="post" class="form-confirm" data-message="Bạn có chắc muốn xóa suất chiếu này không?">
                             <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
                         </form>
                     </td>
@@ -72,6 +72,31 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelectorAll('.form-confirm').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const message = this.getAttribute('data-message');
+                    Swal.fire({
+                        title: 'Xác nhận',
+                        text: message,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Đồng ý',
+                        cancelButtonText: 'Hủy'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit();
+                        }
+                    });
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>

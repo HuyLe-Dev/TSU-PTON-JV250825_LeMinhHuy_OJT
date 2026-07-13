@@ -37,12 +37,13 @@
         <span th:text="${errorMessage}">Lỗi</span>
       </div>
 
-      <form th:action="@{/auth/login}" th:object="${loginDTO}" method="post">
+      <form th:action="@{/auth/login}" th:object="${loginDTO}" method="post" class="needs-validation" novalidate>
 
         <div class="form-group">
           <label for="username">Tên đăng nhập</label>
           <input type="text" id="username" th:field="*{username}" required
             th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''" placeholder="Nhập tên đăng nhập...">
+          <span class="client-feedback">Vui lòng nhập tên đăng nhập.</span>
           <span class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
         </div>
 
@@ -51,6 +52,7 @@
           <input type="password" id="password" th:field="*{password}" required
             th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''" placeholder="Nhập mật khẩu...">
           <i class="bx bx-show toggle-password" onclick="togglePass('password', this)"></i>
+          <span class="client-feedback">Vui lòng nhập mật khẩu.</span>
           <span class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
         </div>
 
@@ -89,6 +91,21 @@
         icon.classList.add('bx-show');
       }
     }
+
+    // Client-side validation
+    (() => {
+      'use strict'
+      const forms = document.querySelectorAll('.needs-validation')
+      Array.from(forms).forEach(form => {
+        form.addEventListener('submit', event => {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+          form.classList.add('was-validated')
+        }, false)
+      })
+    })()
   </script>
 </body>
 

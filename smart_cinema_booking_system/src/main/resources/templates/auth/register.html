@@ -31,12 +31,13 @@
         <span th:text="${errorMessage}">Lỗi</span>
       </div>
 
-      <form th:action="@{/auth/register}" th:object="${registerDTO}" method="post" id="register-form">
+      <form th:action="@{/auth/register}" th:object="${registerDTO}" method="post" id="register-form" class="needs-validation" novalidate>
 
         <div class="form-group">
           <label for="fullName">Họ và tên</label>
           <input type="text" id="fullName" th:field="*{fullName}" required
             th:classappend="${#fields.hasErrors('fullName')} ? 'is-invalid' : ''" placeholder="Nhập họ và tên...">
+          <span class="client-feedback">Vui lòng nhập họ và tên.</span>
           <span class="invalid-feedback" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
         </div>
 
@@ -44,6 +45,7 @@
           <label for="username">Tên đăng nhập</label>
           <input type="text" id="username" th:field="*{username}" required minlength="4" maxlength="50"
             th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' : ''" placeholder="Từ 4 đến 50 ký tự...">
+          <span class="client-feedback">Vui lòng nhập tên đăng nhập (4-50 ký tự).</span>
           <span class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
         </div>
 
@@ -51,6 +53,7 @@
           <label for="email">Địa chỉ Email</label>
           <input type="email" id="email" th:field="*{email}" required
             th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' : ''" placeholder="vi_du@gmail.com...">
+          <span class="client-feedback">Vui lòng nhập email hợp lệ.</span>
           <span class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
         </div>
 
@@ -59,6 +62,7 @@
           <input type="password" id="password" th:field="*{password}" required minlength="6"
             th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' : ''" placeholder="Tối thiểu 6 ký tự...">
           <i class="bx bx-show toggle-password" onclick="togglePass('password', this)"></i>
+          <span class="client-feedback">Vui lòng nhập mật khẩu (tối thiểu 6 ký tự).</span>
           <span class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
         </div>
 
@@ -68,6 +72,7 @@
             th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' : ''"
             placeholder="Nhập lại mật khẩu...">
           <i class="bx bx-show toggle-password" onclick="togglePass('confirmPassword', this)"></i>
+          <span class="client-feedback">Vui lòng nhập lại mật khẩu.</span>
           <span class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}"
             th:errors="*{confirmPassword}"></span>
         </div>
@@ -108,27 +113,36 @@
       }
     }
 
-    // Client-side: kiểm tra mật khẩu khớp trước khi submit
+    // Client-side validation for Bootstrap-style & custom password match
     document.getElementById('register-form').addEventListener('submit', function(e) {
+      var form = this;
       var password = document.getElementById('password').value;
       var confirmPassword = document.getElementById('confirmPassword').value;
       var confirmField = document.getElementById('confirmPassword');
+      
       // Xóa lỗi cũ nếu có
       confirmField.classList.remove('is-invalid');
       var existingError = confirmField.parentNode.querySelector('.js-error');
       if (existingError) existingError.remove();
 
-      if (password !== confirmPassword) {
-        e.preventDefault();
+      var isFormValid = form.checkValidity();
+
+      if (password !== confirmPassword && confirmPassword !== '') {
         confirmField.classList.add('is-invalid');
         var errorSpan = document.createElement('span');
         errorSpan.className = 'invalid-feedback js-error';
         errorSpan.style.display = 'block';
         errorSpan.textContent = 'Mật khẩu xác nhận không khớp!';
         confirmField.parentNode.appendChild(errorSpan);
-        confirmField.focus();
+        isFormValid = false;
       }
-    });
+
+      if (!isFormValid) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
   </script>
 </body>
 

@@ -1,4 +1,4 @@
-/* ===== SMART CINEMA - AUTH PAGES (Login / Register) ===== */
+﻿/* ===== SMART CINEMA - AUTH PAGES (Login / Register) ===== */
 
 :root {
   --bg-dark: #0a0a0f;
@@ -243,4 +243,18 @@ body {
   .auth-logo {
     padding: 16px 20px;
   }
+}
+
+/* ===== CLIENT-SIDE VALIDATION ===== */
+.was-validated .form-group input:invalid {
+  border-color: #dc3545;
+}
+.was-validated .form-group input:invalid ~ .client-feedback {
+  display: block;
+}
+.client-feedback {
+  display: none;
+  color: #ff6b6b;
+  font-size: 0.78rem;
+  margin-top: 4px;
 }

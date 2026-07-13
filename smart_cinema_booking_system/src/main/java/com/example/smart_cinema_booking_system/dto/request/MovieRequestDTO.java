@@ -9,6 +9,7 @@ import com.example.smart_cinema_booking_system.enums.MovieStatus;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,6 +45,6 @@ public class MovieRequestDTO {
     @NotNull(message = "Trạng thái không được để trống")
     private MovieStatus status;
 
-    @NotNull(message = "Vui lòng chọn ít nhất một thể loại")
+    @NotEmpty(message = "Vui lòng chọn ít nhất một thể loại")
     private List<Long> genreIds;
 }

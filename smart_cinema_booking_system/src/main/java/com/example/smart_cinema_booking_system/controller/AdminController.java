@@ -100,8 +100,12 @@ public class AdminController {
 
     @PostMapping("/movies/delete/{id}")
     public String processDeleteMovie(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        movieService.deleteMovie(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Xóa phim thành công!");
+        try {
+            movieService.deleteMovie(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Xóa phim thành công!");
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa phim này vì đang có suất chiếu hoặc dữ liệu liên kết. Vui lòng đổi trạng thái phim sang 'Ngưng chiếu' thay vì xóa cứng.");
+        }
         return "redirect:/admin/movies";
     }
 

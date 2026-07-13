@@ -25,7 +25,7 @@
         <hr>
 
         <form th:action="@{${movieId == null} ? '/admin/movies/create' : '/admin/movies/edit/' + ${movieId}}" 
-              th:object="${movieDTO}" method="post" enctype="multipart/form-data">
+              th:object="${movieDTO}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
             
             <!-- Hiển thị lỗi chung nếu có -->
             <div th:if="${#fields.hasErrors('*')}" class="alert alert-danger">
@@ -37,6 +37,7 @@
                     <div class="mb-3">
                         <label class="form-label">Tên phim (*)</label>
                         <input type="text" class="form-control" th:field="*{title}" required>
+                        <div class="invalid-feedback">Vui lòng nhập tên phim.</div>
                         <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
                     </div>
 
@@ -49,11 +50,13 @@
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Thời lượng (Phút) (*)</label>
                             <input type="number" class="form-control" th:field="*{duration}" required min="1">
+                            <div class="invalid-feedback">Vui lòng nhập thời lượng phim hợp lệ (lớn hơn 0).</div>
                             <div class="text-danger" th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}"></div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Ngày phát hành (*)</label>
                             <input type="date" class="form-control" th:field="*{releaseDate}" required>
+                            <div class="invalid-feedback">Vui lòng chọn ngày phát hành.</div>
                             <div class="text-danger" th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}"></div>
                         </div>
                     </div>
@@ -71,6 +74,7 @@
                                 <option value="C16">C16 (Trên 16 tuổi)</option>
                                 <option value="C18">C18 (Trên 18 tuổi)</option>
                             </select>
+                            <div class="invalid-feedback">Vui lòng chọn giới hạn độ tuổi.</div>
                             <div class="text-danger" th:if="${#fields.hasErrors('ageRating')}" th:errors="*{ageRating}"></div>
                         </div>
                     </div>
@@ -82,14 +86,16 @@
                         <select class="form-select" th:field="*{status}" required>
                             <option th:each="st : ${statuses}" th:value="${st}" th:text="${st}"></option>
                         </select>
+                        <div class="invalid-feedback">Vui lòng chọn trạng thái phim.</div>
                         <div class="text-danger" th:if="${#fields.hasErrors('status')}" th:errors="*{status}"></div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label">Thể loại (*)</label>
-                        <div class="border p-2 rounded" style="max-height: 150px; overflow-y: auto;">
+                        <div class="border p-2 rounded" th:classappend="${#fields.hasErrors('genreIds')} ? 'border-danger bg-light' : ''" style="max-height: 150px; overflow-y: auto;">
                             <div th:each="genre : ${genres}" class="form-check">
-                                <input class="form-check-input" type="checkbox" th:value="${genre.genreId}" th:field="*{genreIds}">
+                                <input class="form-check-input" type="checkbox" th:value="${genre.genreId}" th:field="*{genreIds}"
+                                       th:classappend="${#fields.hasErrors('genreIds')} ? 'is-invalid' : ''">
                                 <label class="form-check-label" th:text="${genre.genreName}"></label>
                             </div>
                         </div>
@@ -123,5 +129,21 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Bootstrap 5 client-side validation
+        (() => {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
 </body>
 </html>

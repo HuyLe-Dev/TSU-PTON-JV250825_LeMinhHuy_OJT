@@ -75,7 +75,7 @@ public class StaffController {
                 model.addAttribute("totalPages", 1);
                 model.addAttribute("totalItems", 1);
             } catch (BusinessException ex) {
-                model.addAttribute("errorMessage", "Khong tim thay ma don hang: " + searchId);
+                model.addAttribute("errorMessage", "Không tìm thấy mã đơn hàng: " + searchId);
                 model.addAttribute("bookings", java.util.Collections.emptyList());
                 model.addAttribute("currentPage", 0);
                 model.addAttribute("totalPages", 0);
@@ -104,7 +104,7 @@ public class StaffController {
             // Async send ticket email
             emailService.sendTicketEmail(id);
 
-            redirectAttributes.addFlashAttribute("successMessage", "Da xac nhan thanh toan thanh cong!");
+            redirectAttributes.addFlashAttribute("successMessage", "Đã xác nhận thanh toán thành công!");
         } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
@@ -115,7 +115,7 @@ public class StaffController {
     public String cancelBooking(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
             bookingService.cancelBookingAdmin(id);
-            redirectAttributes.addFlashAttribute("successMessage", "Da huy don dat ve thanh cong!");
+            redirectAttributes.addFlashAttribute("successMessage", "Đã hủy đơn đặt vé thành công!");
         } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }

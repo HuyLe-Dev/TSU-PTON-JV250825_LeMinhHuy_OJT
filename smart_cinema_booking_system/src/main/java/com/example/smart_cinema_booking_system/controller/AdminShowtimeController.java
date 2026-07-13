@@ -77,6 +77,8 @@ public class AdminShowtimeController {
             redirectAttributes.addFlashAttribute("successMessage", "Xóa suất chiếu thành công!");
         } catch (BusinessException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        } catch (org.springframework.dao.DataIntegrityViolationException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Không thể xóa suất chiếu này vì đã có khách hàng đặt vé. Vui lòng hủy các đơn đặt vé trước khi xóa.");
         }
         return "redirect:/admin/showtimes";
     }
