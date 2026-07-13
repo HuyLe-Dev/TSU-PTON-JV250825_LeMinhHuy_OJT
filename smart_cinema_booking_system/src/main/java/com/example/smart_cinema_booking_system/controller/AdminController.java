@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.smart_cinema_booking_system.dto.request.MovieRequestDTO;
@@ -44,8 +45,16 @@ public class AdminController {
     }
 
     @GetMapping("/movies")
-    public String manageMovies(Model model) {
-        model.addAttribute("movies", movieService.getAllMovies());
+    public String manageMovies(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            Model model) {
+        org.springframework.data.domain.Page<com.example.smart_cinema_booking_system.dto.response.MovieResponseDTO> moviePage = movieService.getAllMoviesPaged(page, size);
+        
+        model.addAttribute("movies", moviePage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", moviePage.getTotalPages());
+        model.addAttribute("totalItems", moviePage.getTotalElements());
         return "admin/movies";
     }
 

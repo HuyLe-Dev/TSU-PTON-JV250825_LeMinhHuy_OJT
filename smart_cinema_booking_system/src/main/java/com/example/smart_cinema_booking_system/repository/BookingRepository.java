@@ -16,6 +16,7 @@ import com.example.smart_cinema_booking_system.enums.BookingStatus;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findByUser_UsernameOrderByBookingDateDesc(String username);
+    org.springframework.data.domain.Page<Booking> findByUser_UsernameOrderByBookingDateDesc(String username, Pageable pageable);
 
     @Query("SELECT MONTH(b.bookingDate), SUM(b.totalAmount) FROM Booking b WHERE b.bookingStatus != 'CANCELLED' AND YEAR(b.bookingDate) = :year GROUP BY MONTH(b.bookingDate) ORDER BY MONTH(b.bookingDate)")
     List<Object[]> findMonthlyRevenue(@Param("year") int year);

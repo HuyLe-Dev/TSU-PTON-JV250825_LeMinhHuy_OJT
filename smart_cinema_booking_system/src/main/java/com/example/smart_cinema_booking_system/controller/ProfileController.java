@@ -124,10 +124,17 @@ public class ProfileController {
      * Xem lịch sử đặt vé.
      */
     @GetMapping("/history")
-    public String viewHistory(Authentication authentication, Model model) {
+    public String viewHistory(
+            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "0") int page,
+            @org.springframework.web.bind.annotation.RequestParam(defaultValue = "5") int size,
+            Authentication authentication, Model model) {
         String username = authentication.getName();
-        List<BookingHistoryDTO> history = bookingService.getBookingHistory(username);
-        model.addAttribute("history", history);
+        org.springframework.data.domain.Page<com.example.smart_cinema_booking_system.dto.response.BookingHistoryDTO> historyPage = bookingService.getBookingHistoryPaged(username, page, size);
+        
+        model.addAttribute("history", historyPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", historyPage.getTotalPages());
+        model.addAttribute("totalItems", historyPage.getTotalElements());
         return "profile/history";
     }
 

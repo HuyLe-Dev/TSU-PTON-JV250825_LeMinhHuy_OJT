@@ -30,6 +30,12 @@ public class MovieService {
                 .collect(Collectors.toList());
     }
 
+    public org.springframework.data.domain.Page<MovieResponseDTO> getAllMoviesPaged(int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "movieId"));
+        org.springframework.data.domain.Page<Movie> moviePage = movieRepository.findAll(pageable);
+        return moviePage.map(this::mapToResponseDTO);
+    }
+
     public MovieRequestDTO getMovieForEdit(Long id) {
         Movie movie = findMovieById(id);
         MovieRequestDTO dto = new MovieRequestDTO();

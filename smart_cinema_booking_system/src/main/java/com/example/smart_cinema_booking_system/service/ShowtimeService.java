@@ -79,10 +79,20 @@ public class ShowtimeService {
                 .collect(Collectors.toList());
     }
 
+    public org.springframework.data.domain.Page<ShowtimeResponseDTO> getAllShowtimesPaged(int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "startTime"));
+        org.springframework.data.domain.Page<Showtime> showtimePage = showtimeRepository.findAll(pageable);
+        return showtimePage.map(this::mapToResponseDTO);
+    }
+
     @Transactional
     public void createShowtime(ShowtimeRequestDTO dto) {
         Movie movie = movieRepository.findById(dto.getMovieId())
                 .orElseThrow(() -> new BusinessException("Không tìm thấy phim!"));
+
+        if (movie.getStatus() == MovieStatus.STOPPED) {
+            throw new BusinessException("Phim này đã ngưng chiếu, không thể tạo suất chiếu mới!");
+        }
 
         Room room = roomRepository.findById(dto.getRoomId())
                 .orElseThrow(() -> new BusinessException("Không tìm thấy phòng chiếu!"));

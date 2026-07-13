@@ -189,6 +189,41 @@ public class BookingService {
         }).collect(Collectors.toList());
     }
 
+    public org.springframework.data.domain.Page<BookingHistoryDTO> getBookingHistoryPaged(String username, int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<Booking> bookingPage = bookingRepository.findByUser_UsernameOrderByBookingDateDesc(username, pageable);
+        LocalDateTime now = LocalDateTime.now();
+
+        return bookingPage.map(b -> {
+            BookingHistoryDTO dto = new BookingHistoryDTO();
+            dto.setBookingId(b.getBookingId());
+            dto.setMovieTitle(b.getShowtime().getMovie().getTitle());
+            dto.setPosterUrl(b.getShowtime().getMovie().getPosterUrl());
+            dto.setRoomName(b.getShowtime().getRoom().getRoomName());
+            dto.setShowtimeStart(b.getShowtime().getStartTime());
+            dto.setBookingDate(b.getBookingDate());
+            dto.setTotalAmount(b.getTotalAmount());
+            dto.setPaymentMethod(b.getPaymentMethod());
+            dto.setStatus(b.getBookingStatus());
+
+            String seats = b.getBookedSeatNames();
+            if (seats == null || seats.isEmpty()) {
+                seats = b.getTickets().stream()
+                        .map(t -> t.getSeat().getSeatName())
+                        .collect(Collectors.joining(", "));
+            }
+            dto.setSeats(seats);
+
+            boolean canCancel = b.getBookingStatus() != BookingStatus.CANCELLED
+                    && b.getShowtime().getStartTime().minusHours(24).isAfter(now);
+            dto.setCancellable(canCancel);
+
+            dto.setUsername(b.getUser().getUsername());
+
+            return dto;
+        });
+    }
+
     public org.springframework.data.domain.Page<BookingHistoryDTO> getAllBookingsPaged(int page, int size) {
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "bookingDate"));
         org.springframework.data.domain.Page<Booking> bookingPage = bookingRepository.findAll(pageable);
